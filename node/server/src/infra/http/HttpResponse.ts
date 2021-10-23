@@ -18,7 +18,6 @@ export class HttpResponseUtils {
 }
 
 function getStatusCodeOf(error: any) {
-  console.log('Error:', error);
   if (error instanceof MissingParamError) return HttpStatusCode.BadRequest;
   return HttpStatusCode.ServerError;
 }

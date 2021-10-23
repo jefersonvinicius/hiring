@@ -10,7 +10,7 @@ export const alphaVantageApi = axios.create({
 });
 
 export class AlphaVantageStockingAPI implements StockingAPI {
-  constructor(private apiKey: string) {
+  constructor(private apiKey?: string) {
     if (!this.apiKey) throw new APIKeyNotProvidedError();
   }
 

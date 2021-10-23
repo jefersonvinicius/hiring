@@ -11,7 +11,6 @@ export class GetStockCurrentPriceRoute implements Route<StockViewModel> {
 
   async handle(httpRequest: HttpRequest<any, any, any>): Promise<HttpResponse<StockViewModel>> {
     try {
-      console.log(httpRequest);
       const stock = await this.getStockCurrentPriceUseCase.execute({
         stockName: httpRequest.params.stockName,
       });

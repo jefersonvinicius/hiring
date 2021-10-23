@@ -1,6 +1,7 @@
 import { StockingAPI } from '@app/services/StockingAPI';
 import { MissingParamError } from '@app/shared/errors/MissingParamError';
 import { Stock } from '../entities/Stock';
+import { StockNotFound } from '../errors/StockNotFound';
 import { GetStockCurrentPriceUseCase } from './GetStockCurrentPrice';
 import { StockHistory } from './GetStockHistory';
 
@@ -28,7 +29,7 @@ describe('GetStockCurrentPrice', () => {
     });
   });
 
-  it('should throw an error when invalid stockName ins"t provided', async () => {
+  it('should throw the MissingParamError when invalid stockName is provided', async () => {
     const { sut } = createSut();
 
     let sutPromise = sut.execute({ stockName: '' });
@@ -36,6 +37,15 @@ describe('GetStockCurrentPrice', () => {
 
     sutPromise = sut.execute({ stockName: ' ' });
     await expect(sutPromise).rejects.toThrow(new MissingParamError('stockName'));
+  });
+
+  it('should throw the StockNotFound when stocking api returns null', async () => {
+    const { sut, stockingAPISpies } = createSut();
+
+    stockingAPISpies.fetchByName.mockResolvedValue(null);
+
+    const sutPromise = sut.execute({ stockName: 'any' });
+    await expect(sutPromise).rejects.toThrow(new StockNotFound('any'));
   });
 });
 
@@ -53,7 +63,7 @@ class FakeStockingAPI implements StockingAPI {
     throw new Error('Method not implemented.');
   }
 
-  async fetchByName(name: string): Promise<Stock> {
+  async fetchByName(name: string): Promise<Stock | null> {
     return new Stock({ name, price: 49.5, pricedAt: new Date('2020-10-23T10:16:00.000Z') });
   }
 }
