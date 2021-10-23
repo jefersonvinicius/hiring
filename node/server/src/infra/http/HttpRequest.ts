@@ -6,9 +6,9 @@ export class HttpRequest<Body = any, Query = any, Params = any> {
   public params?: Params;
 
   constructor(data: { body?: Body; query?: Query; params?: Params }) {
-    this.body = data.body;
-    this.query = data.query;
-    this.params = data.params;
+    this.body = data.body ?? ({} as any);
+    this.query = data.query ?? ({} as any);
+    this.params = data.params ?? ({} as any);
   }
 
   static ofExpress(request: Request) {
