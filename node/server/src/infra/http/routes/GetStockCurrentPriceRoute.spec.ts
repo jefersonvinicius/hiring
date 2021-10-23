@@ -1,4 +1,5 @@
 import { Stock } from '@app/core/entities/Stock';
+import { StockNotFound } from '@app/core/errors/StockNotFound';
 import { GetStockCurrentPriceUseCase } from '@app/core/use-cases/GetStockCurrentPrice';
 import { StockHistory } from '@app/core/use-cases/GetStockHistory';
 import { ViewModel } from '@app/presentation';
@@ -43,13 +44,33 @@ describe('GetStockCurrentPriceRoute', () => {
     expect(response.statusCode).toBe(400);
     expect(response.body).toMatchObject({ message: new MissingParamError('stockName').message });
   });
+
+  it('should returns 404 status code when stock information isn"t found', async () => {
+    const { sut, stockingAPISpies } = createSut();
+    stockingAPISpies.fetchByName.mockResolvedValue(null);
+    const request = new HttpRequest({
+      params: {
+        stockName: 'invalid',
+      },
+    });
+
+    const response = await sut.handle(request);
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body).toMatchObject({ message: new StockNotFound('invalid').message });
+  });
 });
 
 function createSut() {
   const stockingAPI = new FakeStockingAPI();
   const getCurrentPriceUseCase = new GetStockCurrentPriceUseCase(stockingAPI);
   const sut = new GetStockCurrentPriceRoute(getCurrentPriceUseCase);
-  return { sut };
+
+  const stockingAPISpies = {
+    fetchByName: jest.spyOn(stockingAPI, 'fetchByName'),
+  };
+
+  return { sut, stockingAPISpies };
 }
 
 function createFakeStock(name: string) {
@@ -57,7 +78,7 @@ function createFakeStock(name: string) {
 }
 
 class FakeStockingAPI implements StockingAPI {
-  async fetchByName(name: string): Promise<Stock> {
+  async fetchByName(name: string): Promise<Stock | null> {
     return createFakeStock(name);
   }
   fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory> {

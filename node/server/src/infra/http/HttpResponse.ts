@@ -1,3 +1,4 @@
+import { StockNotFound } from '@app/core/errors/StockNotFound';
 import { MissingParamError } from '@app/shared/errors/MissingParamError';
 import { HttpStatusCode } from '.';
 
@@ -19,5 +20,6 @@ export class HttpResponseUtils {
 
 function getStatusCodeOf(error: any) {
   if (error instanceof MissingParamError) return HttpStatusCode.BadRequest;
+  if (error instanceof StockNotFound) return HttpStatusCode.NotFound;
   return HttpStatusCode.ServerError;
 }
