@@ -1,5 +1,6 @@
 import { StockingAPI } from '@app/services/StockingAPI';
 import { Stock } from '../entities/Stock';
+import { StockNotFound } from '../errors/StockNotFound';
 import { GetStockHistoryUseCase, InvalidRangeDate, StockHistory } from './GetStockHistory';
 
 describe('GetStockHistory', () => {
@@ -40,6 +41,20 @@ describe('GetStockHistory', () => {
 
     await expect(sutPromise).rejects.toThrow(new InvalidRangeDate(initialDate, finalDate));
   });
+
+  it('should throw the StockNotFound when stocking api returns null', async () => {
+    const { sut, stockingAPISpies } = createSut();
+
+    stockingAPISpies.fetchStockHistory.mockResolvedValue(null);
+
+    const sutPromise = sut.execute({
+      stockName: 'invalid',
+      initialDate: new Date('2020-10-23T10:00:00.000Z'),
+      finalDate: new Date('2020-10-23T14:00:00.000Z'),
+    });
+
+    await expect(sutPromise).rejects.toThrow(new StockNotFound('invalid'));
+  });
 });
 
 function createSut() {
@@ -53,7 +68,7 @@ function createSut() {
 }
 
 class FakeStockingAPI implements StockingAPI {
-  async fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory> {
+  async fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory | null> {
     return {
       stock: { name: name, price: 10, pricedAt: new Date('2020-10-21T13:00:00.000Z') },
       history: [

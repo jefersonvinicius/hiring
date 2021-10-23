@@ -2,6 +2,7 @@ import { UseCase } from '.';
 import { Stock } from '@app/core/entities/Stock';
 import { HistoryPrice } from '@app/core/entities/HistoryPrice';
 import { StockingAPI } from '@app/services/StockingAPI';
+import { StockNotFound } from '../errors/StockNotFound';
 
 type StockHistoryParams = {
   stockName: string;
@@ -28,6 +29,9 @@ export class GetStockHistoryUseCase implements UseCase<StockHistoryParams, Stock
 
     if (initialDate.getTime() > finalDate.getTime()) throw new InvalidRangeDate(initialDate, finalDate);
 
-    return this.stockingAPI.fetchStockHistory(stockName, initialDate, finalDate);
+    const history = await this.stockingAPI.fetchStockHistory(stockName, initialDate, finalDate);
+    if (!history) throw new StockNotFound(stockName);
+
+    return history;
   }
 }
