@@ -1,4 +1,5 @@
 import { StockingAPI } from '@app/services/StockingAPI';
+import { MissingParamError } from '@app/shared/errors/MissingParamError';
 import { Stock } from '../entities/Stock';
 import { GetStockCurrentPriceUseCase } from './GetStockCurrentPrice';
 import { StockHistory } from './GetStockHistory';
@@ -25,6 +26,16 @@ describe('GetStockCurrentPrice', () => {
       price: 49.5,
       pricedAt: new Date('2020-10-23T10:16:00.000Z'),
     });
+  });
+
+  it('should throw an error when invalid stockName ins"t provided', async () => {
+    const { sut } = createSut();
+
+    let sutPromise = sut.execute({ stockName: '' });
+    await expect(sutPromise).rejects.toThrow(new MissingParamError('stockName'));
+
+    sutPromise = sut.execute({ stockName: ' ' });
+    await expect(sutPromise).rejects.toThrow(new MissingParamError('stockName'));
   });
 });
 
