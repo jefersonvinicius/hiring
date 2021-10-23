@@ -1,9 +1,11 @@
-import { GetStockCurrentPriceUseCase } from "@app/core/use-cases/GetStockCurrentPrice";
-import { HttpRequest } from "@app/infra/http/HttpRequest";
-import { Route } from "@app/infra/http/routes";
-import { GetStockCurrentPriceRoute } from "@app/infra/http/routes/GetStockCurrentPriceRoute";
-import { AlphaVantageStockingAPI } from "@app/services/AlphaVantageStockingAPI";
-import { Request, Response, Router } from "express";
+import { GetStockCurrentPriceUseCase } from '@app/core/use-cases/GetStockCurrentPrice';
+import { GetStockHistoryUseCase } from '@app/core/use-cases/GetStockHistory';
+import { HttpRequest } from '@app/infra/http/HttpRequest';
+import { Route } from '@app/infra/http/routes';
+import { GetStockCurrentPriceRoute } from '@app/infra/http/routes/GetStockCurrentPriceRoute';
+import { GetStockHistoryRoute } from '@app/infra/http/routes/GetStockHistoryRoute';
+import { AlphaVantageStockingAPI } from '@app/services/AlphaVantageStockingAPI';
+import { Request, Response, Router } from 'express';
 
 const router = Router();
 
@@ -11,7 +13,11 @@ const stockingAPI = new AlphaVantageStockingAPI(process.env.API_KEY);
 const getStockCurrentPriceUseCase = new GetStockCurrentPriceUseCase(stockingAPI);
 const getStockCurrentPriceRoute = new GetStockCurrentPriceRoute(getStockCurrentPriceUseCase);
 
-router.get("/stock/:stockName/quote", adaptToRoute(getStockCurrentPriceRoute));
+const getStockHistoryUseCase = new GetStockHistoryUseCase(stockingAPI);
+const getStockHistoryRoute = new GetStockHistoryRoute(getStockHistoryUseCase);
+
+router.get('/stock/:stockName/quote', adaptToRoute(getStockCurrentPriceRoute));
+router.get('/stocks/:stockName/history', adaptToRoute(getStockHistoryRoute));
 
 export default router;
 
