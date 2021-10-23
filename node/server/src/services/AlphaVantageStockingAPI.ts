@@ -14,10 +14,12 @@ export class AlphaVantageStockingAPI implements StockingAPI {
     if (!this.apiKey) throw new APIKeyNotProvidedError();
   }
 
-  async fetchByName(name: string): Promise<Stock> {
+  async fetchByName(name: string): Promise<Stock | null> {
     const url = `/query?function=GLOBAL_QUOTE&symbol=${name}&apikey=${this.apiKey}`;
     const { data } = await alphaVantageApi.get<any>(url);
     const info = data["Global Quote"];
+
+    if (!info || !info["01. symbol"]) return null;
 
     return new Stock({
       name: info["01. symbol"],
@@ -26,11 +28,7 @@ export class AlphaVantageStockingAPI implements StockingAPI {
     });
   }
 
-  fetchStockHistory(
-    name: string,
-    initialDate: Date,
-    finalDate: Date
-  ): Promise<StockHistory> {
+  fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory> {
     throw new Error("Method not implemented.");
   }
 }
