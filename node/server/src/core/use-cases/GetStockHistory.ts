@@ -3,6 +3,7 @@ import { Stock } from '@app/core/entities/Stock';
 import { HistoryPrice } from '@app/core/entities/HistoryPrice';
 import { StockingAPI } from '@app/services/StockingAPI';
 import { StockNotFound } from '../errors/StockNotFound';
+import { MissingParamError } from '@app/shared/errors/MissingParamError';
 
 type StockHistoryParams = {
   stockName: string;
@@ -26,6 +27,8 @@ export class GetStockHistoryUseCase implements UseCase<StockHistoryParams, Stock
 
   async execute(params: StockHistoryParams): Promise<StockHistory> {
     const { stockName, initialDate, finalDate } = params;
+
+    if (!stockName || !stockName.trim()) throw new MissingParamError('stockName');
 
     if (initialDate.getTime() > finalDate.getTime()) throw new InvalidRangeDate(initialDate, finalDate);
 

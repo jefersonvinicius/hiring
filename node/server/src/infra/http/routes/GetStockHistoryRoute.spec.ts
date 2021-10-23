@@ -1,16 +1,15 @@
 import { HistoryPrice } from '@app/core/entities/HistoryPrice';
 import { Stock } from '@app/core/entities/Stock';
 import { StockNotFound } from '@app/core/errors/StockNotFound';
-import { GetStockCurrentPriceUseCase } from '@app/core/use-cases/GetStockCurrentPrice';
 import { GetStockHistoryUseCase, StockHistory } from '@app/core/use-cases/GetStockHistory';
 import { ViewModel } from '@app/presentation';
 import { StockHistoryViewModel } from '@app/presentation/StockHistoryViewModel';
-import { StockViewModel } from '@app/presentation/StockViewModel';
 import { StockingAPI } from '@app/services/StockingAPI';
 import { MissingParamError } from '@app/shared/errors/MissingParamError';
 import { parseViewModel } from '@app/__tests__/helpers';
+import { HttpStatusCode } from '..';
+import { MissingQueryParam } from '../errors/MissingQueryParam';
 import { HttpRequest } from '../HttpRequest';
-import { GetStockCurrentPriceRoute } from './GetStockCurrentPriceRoute';
 import { GetStockHistoryRoute } from './GetStockHistoryRoute';
 
 describe('GetStockHistoryRoute', () => {
@@ -20,6 +19,10 @@ describe('GetStockHistoryRoute', () => {
     const request = new HttpRequest({
       params: {
         stockName: 'any',
+      },
+      query: {
+        from: '2020-09-10',
+        to: '2020-10-10',
       },
     });
     const response = await sut.handle(request);
@@ -34,25 +37,16 @@ describe('GetStockHistoryRoute', () => {
     });
   });
 
-  it('should returns a 400 when invalid stock name is provided', async () => {
-    const { sut } = createSut();
-    const request = new HttpRequest({
-      params: {
-        stockName: ' ',
-      },
-    });
-    const response = await sut.handle(request);
-
-    expect(response.statusCode).toBe(400);
-    expect(response.body).toMatchObject({ message: new MissingParamError('stockName').message });
-  });
-
   it('should returns 404 status code when stock information isn"t found', async () => {
     const { sut, stockingAPISpies } = createSut();
     stockingAPISpies.fetchByName.mockResolvedValue(null);
     const request = new HttpRequest({
       params: {
         stockName: 'invalid',
+      },
+      query: {
+        from: '2020-09-10',
+        to: '2020-10-10',
       },
     });
 
@@ -62,7 +56,51 @@ describe('GetStockHistoryRoute', () => {
     expect(response.body).toMatchObject({ message: new StockNotFound('invalid').message });
   });
 
-  it.todo('should throws the MissingQueryParam when "to" or "from" are missing');
+  it('should returns a 400 when invalid stock name is provided', async () => {
+    const { sut } = createSut();
+    const request = new HttpRequest({
+      params: {
+        stockName: ' ',
+      },
+      query: {
+        from: '2020-09-10',
+        to: '2020-10-10',
+      },
+    });
+    const response = await sut.handle(request);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toMatchObject({ message: new MissingParamError('stockName').message });
+  });
+
+  it('should throws the MissingQueryParam when "to" or "from" are missing', async () => {
+    const { sut } = createSut();
+
+    let request = new HttpRequest({
+      params: {
+        stockName: 'any',
+      },
+    });
+    let response = await sut.handle(request);
+    expect(response.statusCode).toBe(HttpStatusCode.BadRequest);
+    expect(response.body).toMatchObject({
+      message: new MissingQueryParam('from').message,
+    });
+
+    request = new HttpRequest({
+      params: {
+        stockName: 'any',
+      },
+      query: {
+        from: '2020-10-22',
+      },
+    });
+    response = await sut.handle(request);
+    expect(response.statusCode).toBe(HttpStatusCode.BadRequest);
+    expect(response.body).toMatchObject({
+      message: new MissingQueryParam('to').message,
+    });
+  });
 });
 
 function createSut() {
