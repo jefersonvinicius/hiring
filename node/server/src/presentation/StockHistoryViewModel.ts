@@ -4,14 +4,14 @@ import { ViewModel } from '.';
 import { format } from 'date-fns';
 
 type Data = {
-  stock: Stock;
+  stockName: string;
   history: HistoryPrice[];
 };
 
 export class StockHistoryViewModel extends ViewModel<Data> {
   toJSON() {
     return {
-      name: this.data.stock.name,
+      name: this.data.stockName,
       prices: this.data.history.map((item) => ({
         ...item,
         pricedAt: format(item.pricedAt, 'yyyy-MM-dd'),

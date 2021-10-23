@@ -12,7 +12,7 @@ type StockHistoryParams = {
 };
 
 export type StockHistory = {
-  stock: Stock;
+  stockName: string;
   history: HistoryPrice[];
 };
 

@@ -121,7 +121,7 @@ class FakeStockingAPI implements StockingAPI {
   }
   async fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory | null> {
     return {
-      stock: new Stock({ name: name, price: 10, pricedAt: new Date('2020-10-22T10:00:00.000Z') }),
+      stockName: name,
       history: fakeHistoryData(),
     };
   }
