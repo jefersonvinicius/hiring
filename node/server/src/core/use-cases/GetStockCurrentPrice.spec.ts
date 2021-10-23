@@ -1,25 +1,11 @@
 import { StockingAPI } from '@app/services/StockingAPI';
 import { Stock } from '../entities/Stock';
 import { GetStockCurrentPriceUseCase } from './GetStockCurrentPrice';
-
-class FakeStockingAPI implements StockingAPI {
-  async fetchByName(name: string): Promise<Stock> {
-    return new Stock({ name, price: 49.5, pricedAt: new Date('2020-10-23T10:16:00.000Z') });
-  }
-}
-
-function createSUT() {
-  const stockingAPI = new FakeStockingAPI();
-  const stockingAPISpies = {
-    fetchByName: jest.spyOn(stockingAPI, 'fetchByName'),
-  };
-  const sut = new GetStockCurrentPriceUseCase(stockingAPI);
-  return { sut, stockingAPISpies };
-}
+import { StockHistory } from './GetStockHistory';
 
 describe('GetStockCurrentPrice', () => {
   it('should fetch stock data on StockingAPI service', async () => {
-    const { sut, stockingAPISpies } = createSUT();
+    const { sut, stockingAPISpies } = createSut();
     const stock = await sut.execute({ stockName: 'any' });
 
     expect(stockingAPISpies.fetchByName).toHaveBeenCalledWith('any');
@@ -31,7 +17,7 @@ describe('GetStockCurrentPrice', () => {
   });
 
   it('should returns price given the stock name', async () => {
-    const { sut } = createSUT();
+    const { sut } = createSut();
     const stock = await sut.execute({ stockName: 'any' });
 
     expect(stock).toMatchObject({
@@ -41,3 +27,22 @@ describe('GetStockCurrentPrice', () => {
     });
   });
 });
+
+function createSut() {
+  const stockingAPI = new FakeStockingAPI();
+  const stockingAPISpies = {
+    fetchByName: jest.spyOn(stockingAPI, 'fetchByName'),
+  };
+  const sut = new GetStockCurrentPriceUseCase(stockingAPI);
+  return { sut, stockingAPISpies };
+}
+
+class FakeStockingAPI implements StockingAPI {
+  fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory> {
+    throw new Error('Method not implemented.');
+  }
+
+  async fetchByName(name: string): Promise<Stock> {
+    return new Stock({ name, price: 49.5, pricedAt: new Date('2020-10-23T10:16:00.000Z') });
+  }
+}
