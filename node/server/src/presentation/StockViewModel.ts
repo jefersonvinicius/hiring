@@ -4,7 +4,7 @@ import { ViewModel } from '.';
 export class StockViewModel extends ViewModel<Stock> {
   toJSON() {
     return {
-      stock: this.data,
+      ...this.data,
     };
   }
 }

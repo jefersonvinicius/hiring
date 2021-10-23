@@ -1,9 +1,11 @@
 import { Stock } from '@app/core/entities/Stock';
 import { GetStockCurrentPriceUseCase } from '@app/core/use-cases/GetStockCurrentPrice';
 import { StockHistory } from '@app/core/use-cases/GetStockHistory';
+import { ViewModel } from '@app/presentation';
 import { StockViewModel } from '@app/presentation/StockViewModel';
 import { StockingAPI } from '@app/services/StockingAPI';
 import { MissingParamError } from '@app/shared/errors/MissingParamError';
+import { parseViewModel } from '@app/__tests__/helpers';
 import { HttpRequest } from '../HttpRequest';
 import { GetStockCurrentPriceRoute } from './GetStockCurrentPriceRoute';
 
@@ -20,7 +22,13 @@ describe('GetStockCurrentPriceRoute', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeInstanceOf(StockViewModel);
-    expect(response.body).toEqual(new StockViewModel(createFakeStock('any')));
+
+    const parsed = parseViewModel(response.body as ViewModel<any>);
+    expect(parsed).toMatchObject({
+      name: 'any',
+      price: 50,
+      pricedAt: new Date('2021-10-22T10:10:00.000Z').toJSON(),
+    });
   });
 
   it('should returns a 400 when invalid stock name is provided', async () => {
