@@ -160,6 +160,83 @@ describe('AlphaVantageStockingAPI', () => {
         ],
       });
     });
+
+    it('should get history correctly when the initial date ins"t within of response but final do', async () => {
+      jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(validHistoryResponse());
+
+      const sut = new AlphaVantageStockingAPI('any');
+      const history = await sut.fetchStockHistory('any_stock', new Date('2021-10-02'), new Date('2021-10-13'));
+
+      expect(history).toEqual({
+        stockName: 'any_stock',
+        history: [
+          new HistoryPrice({
+            opening: 140.52,
+            high: 141.41,
+            low: 139.66,
+            closing: 140.76,
+            volume: 2880747,
+            pricedAt: new Date('2021-10-13'),
+          }),
+          new HistoryPrice({
+            opening: 142.21,
+            high: 142.3,
+            low: 140.3,
+            closing: 140.47,
+            volume: 3148559,
+            pricedAt: new Date('2021-10-12'),
+          }),
+          new HistoryPrice({
+            opening: 143.5,
+            high: 144.08,
+            low: 142.4,
+            closing: 142.43,
+            volume: 2793298,
+            pricedAt: new Date('2021-10-11'),
+          }),
+          new HistoryPrice({
+            opening: 141.81,
+            high: 143.65,
+            low: 141.05,
+            closing: 143.22,
+            volume: 3731279,
+            pricedAt: new Date('2021-10-08'),
+          }),
+          new HistoryPrice({
+            opening: 142.73,
+            high: 143.395,
+            low: 141.53,
+            closing: 141.81,
+            volume: 3823803,
+            pricedAt: new Date('2021-10-07'),
+          }),
+          new HistoryPrice({
+            opening: 142.48,
+            high: 143.37,
+            low: 140.89,
+            closing: 142.36,
+            volume: 5328433,
+            pricedAt: new Date('2021-10-06'),
+          }),
+          new HistoryPrice({
+            opening: 144.75,
+            high: 145.0,
+            low: 142.64,
+            closing: 143.15,
+            volume: 6976648,
+            pricedAt: new Date('2021-10-05'),
+          }),
+          new HistoryPrice({
+            opening: 142.74,
+            high: 146.0,
+            low: 142.3501,
+            closing: 144.11,
+            volume: 7351128,
+            pricedAt: new Date('2021-10-04'),
+          }),
+        ],
+      });
+    });
   });
 });
 

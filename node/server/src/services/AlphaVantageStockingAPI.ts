@@ -36,11 +36,11 @@ export class AlphaVantageStockingAPI implements StockingAPI {
     console.log(initialDate, finalDate);
     console.log(initialDate.getUTCDate());
     console.log(initialDate.getTimezoneOffset());
-    const initialDateStr = Clock.format(initialDate, 'yyyy-MM-dd');
+    const historyData = data['Time Series (Daily)'] as { [key: string]: any };
+    const initialDateStr = this.getInitialDateStr(initialDate, historyData);
     const finalDateStr = Clock.format(finalDate, 'yyyy-MM-dd');
     console.log(initialDateStr, finalDateStr);
 
-    const historyData = data['Time Series (Daily)'] as { [key: string]: any };
     const entries = Object.entries(historyData);
     const finalIndex = entries.findIndex(([dateStr]) => initialDateStr === dateStr);
     const startIndex = entries.findIndex(([dateStr]) => finalDateStr === dateStr);
@@ -61,6 +61,20 @@ export class AlphaVantageStockingAPI implements StockingAPI {
       stockName: name,
       history: historyPrices,
     };
+  }
+
+  private getInitialDateStr(initialDate: Date, historyData: any) {
+    let date = initialDate;
+    let dateStr = Clock.format(date, 'yyyy-MM-dd');
+
+    while (true) {
+      if (historyData[dateStr]) break;
+
+      date = Clock.addDays(date, 1);
+      dateStr = Clock.format(date, 'yyyy-MM-dd');
+    }
+
+    return dateStr;
   }
 }
 
