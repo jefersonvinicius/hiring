@@ -19,7 +19,7 @@
     "typescript": "^4.4.4"
   },
   "scripts": {
-    "test:unit": "jest --watch",
+    "test:unit": "TZ=utc jest --watch",
     "dev": "nodemon"
   },
   "dependencies": {

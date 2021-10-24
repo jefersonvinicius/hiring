@@ -3,6 +3,7 @@ type PriceConstructorData = {
   low: number;
   high: number;
   closing: number;
+  volume: number;
   pricedAt: Date;
 };
 
@@ -11,6 +12,7 @@ export class HistoryPrice {
   public low: number;
   public high: number;
   public closing: number;
+  public volume: number;
   public pricedAt: Date;
 
   constructor(data: PriceConstructorData) {
@@ -19,5 +21,6 @@ export class HistoryPrice {
     this.high = data.high;
     this.closing = data.closing;
     this.pricedAt = data.pricedAt;
+    this.volume = data.volume;
   }
 }
