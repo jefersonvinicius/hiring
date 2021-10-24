@@ -237,6 +237,59 @@ describe('AlphaVantageStockingAPI', () => {
         ],
       });
     });
+
+    it('should get history correctly when the final date ins"t within of response but initial do', async () => {
+      jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(validHistoryResponse());
+
+      const sut = new AlphaVantageStockingAPI('any');
+      const history = await sut.fetchStockHistory('any_stock', new Date('2021-10-11'), new Date('2021-10-17'));
+
+      expect(history).toEqual({
+        stockName: 'any_stock',
+        history: [
+          new HistoryPrice({
+            opening: 143.39,
+            high: 144.85,
+            low: 142.79,
+            closing: 144.61,
+            volume: 3222778,
+            pricedAt: new Date('2021-10-15'),
+          }),
+          new HistoryPrice({
+            opening: 141.04,
+            high: 143.92,
+            low: 141.01,
+            closing: 143.39,
+            volume: 4217305,
+            pricedAt: new Date('2021-10-14'),
+          }),
+          new HistoryPrice({
+            opening: 140.52,
+            high: 141.41,
+            low: 139.66,
+            closing: 140.76,
+            volume: 2880747,
+            pricedAt: new Date('2021-10-13'),
+          }),
+          new HistoryPrice({
+            opening: 142.21,
+            high: 142.3,
+            low: 140.3,
+            closing: 140.47,
+            volume: 3148559,
+            pricedAt: new Date('2021-10-12'),
+          }),
+          new HistoryPrice({
+            opening: 143.5,
+            high: 144.08,
+            low: 142.4,
+            closing: 142.43,
+            volume: 2793298,
+            pricedAt: new Date('2021-10-11'),
+          }),
+        ],
+      });
+    });
   });
 });
 

@@ -38,7 +38,7 @@ export class AlphaVantageStockingAPI implements StockingAPI {
     console.log(initialDate.getTimezoneOffset());
     const historyData = data['Time Series (Daily)'] as { [key: string]: any };
     const initialDateStr = this.getInitialDateStr(initialDate, historyData);
-    const finalDateStr = Clock.format(finalDate, 'yyyy-MM-dd');
+    const finalDateStr = this.getFinalDateStr(finalDate, historyData);
     console.log(initialDateStr, finalDateStr);
 
     const entries = Object.entries(historyData);
@@ -71,6 +71,20 @@ export class AlphaVantageStockingAPI implements StockingAPI {
       if (historyData[dateStr]) break;
 
       date = Clock.addDays(date, 1);
+      dateStr = Clock.format(date, 'yyyy-MM-dd');
+    }
+
+    return dateStr;
+  }
+
+  private getFinalDateStr(finalDate: Date, historyData: any) {
+    let date = finalDate;
+    let dateStr = Clock.format(date, 'yyyy-MM-dd');
+
+    while (true) {
+      if (historyData[dateStr]) break;
+
+      date = Clock.subtractDays(date, 1);
       dateStr = Clock.format(date, 'yyyy-MM-dd');
     }
 

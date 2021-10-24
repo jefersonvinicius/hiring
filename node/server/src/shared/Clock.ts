@@ -1,4 +1,4 @@
-import { addDays, format } from 'date-fns';
+import { addDays, format, subDays } from 'date-fns';
 
 export class Clock {
   static now(): Date {
@@ -11,5 +11,9 @@ export class Clock {
 
   static addDays(date: Date | number, amount: number) {
     return addDays(date, amount);
+  }
+
+  static subtractDays(date: Date | number, amount: number) {
+    return subDays(date, amount);
   }
 }
