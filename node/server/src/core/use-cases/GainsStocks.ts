@@ -10,7 +10,7 @@ type GainsParams = {
   stockName: string;
 };
 
-type GainsResult = {
+export type GainsResult = {
   name: string;
   purchasedAmount: number;
   purchasedAt: Date;
