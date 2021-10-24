@@ -21,7 +21,6 @@ describe('AlphaVantageStockingAPI', () => {
   describe('fetchByName', () => {
     it('should return an stock instance', async () => {
       const apiGetSpy = jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(validStockResponse());
-      jest.spyOn(Clock, 'now').mockReturnValue(new Date('2022-10-22T10:00:00.000Z'));
 
       const sut = new AlphaVantageStockingAPI('any');
       const stock = await sut.fetchByName('any_stock');
@@ -31,7 +30,7 @@ describe('AlphaVantageStockingAPI', () => {
       expect(stock).toEqual({
         name: 'any_stock',
         price: 127.88,
-        pricedAt: new Date('2022-10-22T10:00:00.000Z'),
+        pricedAt: new Date('2021-10-22'),
       });
     });
 

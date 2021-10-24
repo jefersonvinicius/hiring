@@ -25,7 +25,7 @@ export class AlphaVantageStockingAPI implements StockingAPI {
     return new Stock({
       name: info['01. symbol'],
       price: Number(info['05. price']),
-      pricedAt: Clock.now(),
+      pricedAt: new Date(info['07. latest trading day']),
     });
   }
 
