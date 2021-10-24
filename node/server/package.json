@@ -21,12 +21,14 @@
   "scripts": {
     "test:unit": "TZ=utc jest --watch",
     "test": "TZ=utc jest",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "build": "rimraf ./build && tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "axios": "^0.23.0",
     "date-fns": "^2.25.0",
     "dotenv": "^10.0.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "rimraf": "^3.0.2"
   }
 }
