@@ -32,21 +32,20 @@ export class AlphaVantageStockingAPI implements StockingAPI {
   async fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory> {
     const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${name}&outputsize=full&apikey=${this.apiKey}`;
     const { data } = await alphaVantageApi.get<any>(url);
-    console.log(process.env.TZ);
-    console.log(initialDate, finalDate);
-    console.log(initialDate.getUTCDate());
-    console.log(initialDate.getTimezoneOffset());
+
     const historyData = data['Time Series (Daily)'] as { [key: string]: any };
-    const initialDateStr = this.getInitialDateStr(initialDate, historyData);
-    const finalDateStr = this.getFinalDateStr(finalDate, historyData);
-    console.log(initialDateStr, finalDateStr);
 
     const entries = Object.entries(historyData);
-    const finalIndex = entries.findIndex(([dateStr]) => initialDateStr === dateStr);
-    const startIndex = entries.findIndex(([dateStr]) => finalDateStr === dateStr);
-    console.log(startIndex, finalIndex);
-    const entriesWithin = entries.slice(startIndex, finalIndex + 1);
-    const historyPrices = entriesWithin.map(([dateStr, values]) => {
+    const { startIndex, finalIndex } = getRangeIndex();
+    const entriesWithinRangeDate = entries.slice(startIndex, finalIndex + 1);
+
+    return {
+      stockName: name,
+      history: entriesWithinRangeDate.map(createHistoryPriceFromEntry),
+    };
+
+    function createHistoryPriceFromEntry(entry: [string, any]) {
+      const [dateStr, values] = entry;
       return new HistoryPrice({
         opening: Number(values['1. open']),
         closing: Number(values['4. close']),
@@ -55,41 +54,49 @@ export class AlphaVantageStockingAPI implements StockingAPI {
         volume: Number(values['5. volume']),
         pricedAt: new Date(dateStr),
       });
-    });
-
-    return {
-      stockName: name,
-      history: historyPrices,
-    };
-  }
-
-  private getInitialDateStr(initialDate: Date, historyData: any) {
-    let date = initialDate;
-    let dateStr = Clock.format(date, 'yyyy-MM-dd');
-
-    while (true) {
-      if (historyData[dateStr]) break;
-
-      date = Clock.addDays(date, 1);
-      dateStr = Clock.format(date, 'yyyy-MM-dd');
     }
 
-    return dateStr;
-  }
-
-  private getFinalDateStr(finalDate: Date, historyData: any) {
-    let date = finalDate;
-    let dateStr = Clock.format(date, 'yyyy-MM-dd');
-
-    while (true) {
-      if (historyData[dateStr]) break;
-
-      date = Clock.subtractDays(date, 1);
-      dateStr = Clock.format(date, 'yyyy-MM-dd');
+    function getRangeDate() {
+      const initialDateStr = getInitialDateStr(initialDate, historyData);
+      const finalDateStr = getFinalDateStr(finalDate, historyData);
+      return { initialDateStr, finalDateStr };
     }
 
-    return dateStr;
+    function getRangeIndex() {
+      const { initialDateStr, finalDateStr } = getRangeDate();
+      const finalIndex = entries.findIndex(([dateStr]) => initialDateStr === dateStr);
+      const startIndex = entries.findIndex(([dateStr]) => finalDateStr === dateStr);
+      return { startIndex, finalIndex };
+    }
   }
+}
+
+function getInitialDateStr(initialDate: Date, historyData: any) {
+  let date = initialDate;
+  let dateStr = Clock.format(date, 'yyyy-MM-dd');
+
+  while (true) {
+    if (historyData[dateStr]) break;
+
+    date = Clock.addDays(date, 1);
+    dateStr = Clock.format(date, 'yyyy-MM-dd');
+  }
+
+  return dateStr;
+}
+
+function getFinalDateStr(finalDate: Date, historyData: any) {
+  let date = finalDate;
+  let dateStr = Clock.format(date, 'yyyy-MM-dd');
+
+  while (true) {
+    if (historyData[dateStr]) break;
+
+    date = Clock.subtractDays(date, 1);
+    dateStr = Clock.format(date, 'yyyy-MM-dd');
+  }
+
+  return dateStr;
 }
 
 export class APIKeyNotProvidedError extends Error {
