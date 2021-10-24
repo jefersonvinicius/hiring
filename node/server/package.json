@@ -20,6 +20,7 @@
   },
   "scripts": {
     "test:unit": "TZ=utc jest --watch",
+    "test": "TZ=utc jest",
     "dev": "nodemon"
   },
   "dependencies": {
