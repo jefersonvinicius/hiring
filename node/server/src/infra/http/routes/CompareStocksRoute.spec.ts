@@ -5,7 +5,7 @@ import { CompareStocksViewModel } from '@app/presentation/CompareStocksViewModel
 import { StockingAPI } from '@app/services/StockingAPI';
 import { parseViewModel } from '@app/__tests__/helpers';
 import { HttpRequest } from '../HttpRequest';
-import { CompareStocksRoute } from './CompareStocksRoute';
+import { CompareStocksRoute, InvalidStocksToCompareError } from './CompareStocksRoute';
 
 describe('CompareStocksRoute', () => {
   it('should return correct model view', async () => {
@@ -31,6 +31,25 @@ describe('CompareStocksRoute', () => {
         { name: 'any 2', lastPrice: 11, pricedAt: '2020-10-11' },
         { name: 'any 3', lastPrice: 12, pricedAt: '2020-10-12' },
       ],
+    });
+  });
+
+  it('should return 400 status code when stocks to compare isn"t provided', async () => {
+    const { sut, useCaseSpies } = createSut();
+    useCaseSpies.execute.mockResolvedValue([
+      new Stock({ name: 'any', price: 10, pricedAt: new Date('2020-10-10') }),
+      new Stock({ name: 'any 2', price: 11, pricedAt: new Date('2020-10-11') }),
+      new Stock({ name: 'any 3', price: 12, pricedAt: new Date('2020-10-12') }),
+    ]);
+    const httpRequest = new HttpRequest({
+      params: { stockName: 'any' },
+    });
+
+    const response = await sut.handle(httpRequest);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toMatchObject({
+      message: new InvalidStocksToCompareError().message,
     });
   });
 });

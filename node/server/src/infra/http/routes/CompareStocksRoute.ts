@@ -3,14 +3,27 @@ import { CompareStocksViewModel } from '@app/presentation/CompareStocksViewModel
 import { Route } from '.';
 import { HttpStatusCode } from '..';
 import { HttpRequest } from '../HttpRequest';
-import { HttpResponse } from '../HttpResponse';
+import { HttpResponse, HttpResponseUtils } from '../HttpResponse';
 
 export class CompareStocksRoute implements Route<CompareStocksViewModel> {
   constructor(private compareStocksUseCase: CompareStocksUseCase) {}
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse<CompareStocksViewModel>> {
-    const stockName = [httpRequest.params.stockName, ...httpRequest.body.stocks];
-    const result = await this.compareStocksUseCase.execute({ stockNames: stockName });
-    return { statusCode: HttpStatusCode.Ok, body: new CompareStocksViewModel(result) };
+    try {
+      const stocksToCompare = httpRequest.body.stocks;
+      if (!stocksToCompare || stocksToCompare.length === 0) throw new InvalidStocksToCompareError();
+
+      const stockName = [httpRequest.params.stockName, ...stocksToCompare];
+      const result = await this.compareStocksUseCase.execute({ stockNames: stockName });
+      return { statusCode: HttpStatusCode.Ok, body: new CompareStocksViewModel(result) };
+    } catch (error) {
+      return HttpResponseUtils.createErrorResponse(error);
+    }
+  }
+}
+
+export class InvalidStocksToCompareError extends Error {
+  constructor() {
+    super('The stocks body field was not provided or was provided as empty array');
   }
 }

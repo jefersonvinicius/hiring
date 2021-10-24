@@ -1,7 +1,9 @@
+import { CompareStocksUseCase } from '@app/core/use-cases/CompareStocks';
 import { GetStockCurrentPriceUseCase } from '@app/core/use-cases/GetStockCurrentPrice';
 import { GetStockHistoryUseCase } from '@app/core/use-cases/GetStockHistory';
 import { HttpRequest } from '@app/infra/http/HttpRequest';
 import { Route } from '@app/infra/http/routes';
+import { CompareStocksRoute } from '@app/infra/http/routes/CompareStocksRoute';
 import { GetStockCurrentPriceRoute } from '@app/infra/http/routes/GetStockCurrentPriceRoute';
 import { GetStockHistoryRoute } from '@app/infra/http/routes/GetStockHistoryRoute';
 import { AlphaVantageStockingAPI } from '@app/services/AlphaVantageStockingAPI';
@@ -16,8 +18,12 @@ const getStockCurrentPriceRoute = new GetStockCurrentPriceRoute(getStockCurrentP
 const getStockHistoryUseCase = new GetStockHistoryUseCase(stockingAPI);
 const getStockHistoryRoute = new GetStockHistoryRoute(getStockHistoryUseCase);
 
+const compareStocksUseCase = new CompareStocksUseCase(stockingAPI);
+const compareStocksRoute = new CompareStocksRoute(compareStocksUseCase);
+
 router.get('/stock/:stockName/quote', adaptToRoute(getStockCurrentPriceRoute));
 router.get('/stocks/:stockName/history', adaptToRoute(getStockHistoryRoute));
+router.get('/stocks/:stockName/compare', adaptToRoute(compareStocksRoute));
 
 export default router;
 

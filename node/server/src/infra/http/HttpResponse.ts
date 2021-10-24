@@ -2,6 +2,7 @@ import { StockNotFound } from '@app/core/errors/StockNotFound';
 import { MissingParamError } from '@app/shared/errors/MissingParamError';
 import { HttpStatusCode } from '.';
 import { MissingQueryParam } from './errors/MissingQueryParam';
+import { InvalidStocksToCompareError } from './routes/CompareStocksRoute';
 
 type ErrorResponse = { message: string };
 
@@ -23,5 +24,6 @@ function getStatusCodeOf(error: any) {
   if (error instanceof MissingParamError) return HttpStatusCode.BadRequest;
   if (error instanceof StockNotFound) return HttpStatusCode.NotFound;
   if (error instanceof MissingQueryParam) return HttpStatusCode.BadRequest;
+  if (error instanceof InvalidStocksToCompareError) return HttpStatusCode.BadRequest;
   return HttpStatusCode.ServerError;
 }
