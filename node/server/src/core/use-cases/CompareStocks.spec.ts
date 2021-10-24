@@ -5,16 +5,16 @@ import { StockHistory } from './GetStockHistory';
 
 describe('CompareStocksUseCase', () => {
   it('should return a list of stocks given their names', async () => {
-    const stockingAPI = new FakeStockingAPI();
-    jest
-      .spyOn(stockingAPI, 'fetchByName')
+    const { sut, stockingAPISpies } = createSut();
+    stockingAPISpies.fetchByName
       .mockResolvedValueOnce(new Stock({ name: 'any', price: 10, pricedAt: new Date('2020-10-10') }))
       .mockResolvedValueOnce(new Stock({ name: 'any 2', price: 11, pricedAt: new Date('2020-10-11') }))
       .mockResolvedValueOnce(new Stock({ name: 'any 3', price: 12, pricedAt: new Date('2020-10-12') }));
-    const sut = new CompareStocksUseCase(stockingAPI);
+
     const stocks = await sut.execute({
       stockNames: ['any', 'any 2', 'any 3'],
     });
+
     expect(stocks).toEqual([
       new Stock({ name: 'any', price: 10, pricedAt: new Date('2020-10-10') }),
       new Stock({ name: 'any 2', price: 11, pricedAt: new Date('2020-10-11') }),
@@ -23,22 +23,29 @@ describe('CompareStocksUseCase', () => {
   });
 
   it('should remove of stocks result the stock names that not exists', async () => {
-    const stockingAPI = new FakeStockingAPI();
-    jest
-      .spyOn(stockingAPI, 'fetchByName')
+    const { sut, stockingAPISpies } = createSut();
+    stockingAPISpies.fetchByName
       .mockResolvedValueOnce(new Stock({ name: 'any', price: 10, pricedAt: new Date('2020-10-10') }))
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce(new Stock({ name: 'any 3', price: 12, pricedAt: new Date('2020-10-12') }));
-    const sut = new CompareStocksUseCase(stockingAPI);
+
     const stocks = await sut.execute({
       stockNames: ['any', 'any 2', 'any 3'],
     });
+
     expect(stocks).toEqual([
       new Stock({ name: 'any', price: 10, pricedAt: new Date('2020-10-10') }),
       new Stock({ name: 'any 3', price: 12, pricedAt: new Date('2020-10-12') }),
     ]);
   });
 });
+
+function createSut() {
+  const stockingAPI = new FakeStockingAPI();
+  const fetchByName = jest.spyOn(stockingAPI, 'fetchByName');
+  const sut = new CompareStocksUseCase(stockingAPI);
+  return { sut, stockingAPISpies: { fetchByName } };
+}
 
 class FakeStockingAPI implements StockingAPI {
   fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory> {
