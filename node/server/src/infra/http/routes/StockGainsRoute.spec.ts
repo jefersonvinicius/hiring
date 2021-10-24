@@ -25,7 +25,7 @@ describe('StockGainsRoute', () => {
 
     const request = new HttpRequest({
       params: { stockName: 'Any' },
-      query: { purchasedAt: '2021-10-22', purchasedAmount: 100 },
+      query: { purchasedAt: '2021-10-22', purchasedAmount: '100' },
     });
     const response = await sut.handle(request);
 

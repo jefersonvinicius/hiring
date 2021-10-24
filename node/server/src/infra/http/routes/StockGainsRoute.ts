@@ -16,7 +16,7 @@ export class StockGainsRoute implements Route {
       if (!purchasedAmount) throw new MissingQueryParam('purchasedAmount');
 
       const stockGains = await this.stockGainsUseCase.execute({
-        purchasedAmount: purchasedAmount,
+        purchasedAmount: Number(purchasedAmount),
         purchasedAt: new Date(purchasedAt),
         stockName: httpRequest.params.stockName,
       });
