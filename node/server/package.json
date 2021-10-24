@@ -22,7 +22,8 @@
     "test:unit": "TZ=utc jest --watch",
     "test": "TZ=utc jest",
     "dev": "nodemon",
-    "build": "rimraf ./build && tsc -p tsconfig.build.json"
+    "build": "rimraf ./build && tsc -p tsconfig.build.json",
+    "start": "yarn build && node build/index.js"
   },
   "dependencies": {
     "axios": "^0.23.0",
