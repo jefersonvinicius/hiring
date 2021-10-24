@@ -27,8 +27,8 @@ describe('GetStockCurrentPriceRoute', () => {
     const parsed = parseViewModel(response.body as ViewModel<any>);
     expect(parsed).toMatchObject({
       name: 'any',
-      price: 50,
-      pricedAt: new Date('2021-10-22T10:10:00.000Z').toJSON(),
+      lastPrice: 50,
+      pricedAt: '2021-10-22',
     });
   });
 

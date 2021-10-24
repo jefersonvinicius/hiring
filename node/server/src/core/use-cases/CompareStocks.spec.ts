@@ -47,7 +47,5 @@ class FakeStockingAPI implements StockingAPI {
 
   async fetchByName(name: string): Promise<Stock | null> {
     throw new Error('Method not implemented.');
-
-    return new Stock({ name, price: 49.5, pricedAt: new Date('2020-10-23') });
   }
 }

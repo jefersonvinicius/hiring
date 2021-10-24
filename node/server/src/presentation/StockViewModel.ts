@@ -1,4 +1,5 @@
 import { Stock } from '@app/core/entities/Stock';
+import { Clock } from '@app/shared/Clock';
 import { ViewModel } from '.';
 
 export class StockViewModel extends ViewModel<Stock> {
@@ -8,7 +9,9 @@ export class StockViewModel extends ViewModel<Stock> {
 
   toJSON() {
     return {
-      ...this.data,
+      name: this.data.name,
+      lastPrice: this.data.price,
+      pricedAt: Clock.format(this.data.pricedAt, 'yyyy-MM-dd'),
     };
   }
 }
