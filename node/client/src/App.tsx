@@ -1,5 +1,6 @@
 import React from 'react';
+import StockQuote from 'StockQuote';
 
 export default function App() {
-  return <div />;
+  return <StockQuote stockName="IBM" />;
 }
