@@ -1,4 +1,4 @@
-import { addDays, format, subDays } from 'date-fns';
+import { addDays, format, isAfter, subDays } from 'date-fns';
 
 export class Clock {
   static now(): Date {
@@ -15,5 +15,13 @@ export class Clock {
 
   static subtractDays(date: Date | number, amount: number) {
     return subDays(date, amount);
+  }
+
+  static isAfter(date: Date | number, dateToCompare: Date | number) {
+    return isAfter(date, dateToCompare);
+  }
+
+  static isAfterNow(dateToCompare: Date | number) {
+    return isAfter(dateToCompare, this.now());
   }
 }

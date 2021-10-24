@@ -1,6 +1,11 @@
 import { Stock } from '@app/core/entities/Stock';
 import { Clock } from '@app/shared/Clock';
-import { alphaVantageApi, AlphaVantageStockingAPI, APIKeyNotProvidedError } from './AlphaVantageStockingAPI';
+import {
+  alphaVantageApi,
+  AlphaVantageStockingAPI,
+  APIKeyNotProvidedError,
+  FinalDateInvalidError,
+} from './AlphaVantageStockingAPI';
 
 import { IBM_STOCK_DAILY_HISTORY } from '@app/__tests__/fixtures/stock-history-sample';
 import { HistoryPrice } from '@app/core/entities/HistoryPrice';
@@ -41,6 +46,14 @@ describe('AlphaVantageStockingAPI', () => {
   });
 
   describe('fetchStockHistory', () => {
+    it('should throws an error if final date is after then today', async () => {
+      jest.spyOn(Clock, 'now').mockReturnValue(new Date('2021-10-22'));
+      const sut = new AlphaVantageStockingAPI('any');
+      const invalidFinalDate = new Date('2021-10-25');
+      const promise = sut.fetchStockHistory('any_stock', new Date('2021-10-11'), invalidFinalDate);
+      await expect(promise).rejects.toThrow(new FinalDateInvalidError(invalidFinalDate));
+    });
+
     it('should get history correctly when the range date is within of response', async () => {
       const apiGetSpy = jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(validHistoryResponse());
 

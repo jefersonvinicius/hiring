@@ -30,6 +30,8 @@ export class AlphaVantageStockingAPI implements StockingAPI {
   }
 
   async fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory | null> {
+    if (Clock.isAfterNow(finalDate)) throw new FinalDateInvalidError(finalDate);
+
     const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${name}&outputsize=full&apikey=${this.apiKey}`;
     const { data } = await alphaVantageApi.get<any>(url);
 
@@ -103,5 +105,11 @@ function getFinalDateStr(finalDate: Date, historyData: any) {
 export class APIKeyNotProvidedError extends Error {
   constructor() {
     super('The alpha vantage api need an API key');
+  }
+}
+
+export class FinalDateInvalidError extends Error {
+  constructor(date: Date) {
+    super(`The final date ${date.toUTCString()} is invalid.`);
   }
 }
