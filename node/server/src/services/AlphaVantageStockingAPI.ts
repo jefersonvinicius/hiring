@@ -29,11 +29,12 @@ export class AlphaVantageStockingAPI implements StockingAPI {
     });
   }
 
-  async fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory> {
+  async fetchStockHistory(name: string, initialDate: Date, finalDate: Date): Promise<StockHistory | null> {
     const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${name}&outputsize=full&apikey=${this.apiKey}`;
     const { data } = await alphaVantageApi.get<any>(url);
 
     const historyData = data['Time Series (Daily)'] as { [key: string]: any };
+    if (!historyData) return null;
 
     const entries = Object.entries(historyData);
     const { startIndex, finalIndex } = getRangeIndex();

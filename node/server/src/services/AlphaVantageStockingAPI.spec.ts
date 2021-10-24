@@ -161,7 +161,7 @@ describe('AlphaVantageStockingAPI', () => {
       });
     });
 
-    it('should get history correctly when the initial date ins"t within of response but final do', async () => {
+    it('should get history correctly when the initial date isn"t within of response, but final does', async () => {
       jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(validHistoryResponse());
 
       const sut = new AlphaVantageStockingAPI('any');
@@ -238,7 +238,7 @@ describe('AlphaVantageStockingAPI', () => {
       });
     });
 
-    it('should get history correctly when the final date ins"t within of response but initial do', async () => {
+    it('should get history correctly when the final date isn"t within of response, but initial does', async () => {
       jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(validHistoryResponse());
 
       const sut = new AlphaVantageStockingAPI('any');
@@ -290,6 +290,14 @@ describe('AlphaVantageStockingAPI', () => {
         ],
       });
     });
+
+    it('should returns null when history data ins"t returned', async () => {
+      jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(emptyHistoryResponse());
+
+      const sut = new AlphaVantageStockingAPI('any');
+      const history = await sut.fetchStockHistory('any_stock', new Date('2021-10-11'), new Date('2021-10-17'));
+      expect(history).toBeNull();
+    });
   });
 });
 
@@ -323,5 +331,14 @@ function emptyStockResponse() {
 function validHistoryResponse() {
   return {
     data: IBM_STOCK_DAILY_HISTORY,
+  };
+}
+
+function emptyHistoryResponse() {
+  return {
+    data: {
+      'Error Message':
+        'Invalid API call. Please retry or visit the documentation (https://www.alphavantage.co/documentation/) for TIME_SERIES_DAILY.',
+    },
   };
 }
