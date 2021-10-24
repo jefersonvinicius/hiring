@@ -304,6 +304,59 @@ describe('AlphaVantageStockingAPI', () => {
       });
     });
 
+    it('should get history since than first entry when initial date is before that first entry', async () => {
+      jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(validHistoryResponse());
+
+      const sut = new AlphaVantageStockingAPI('any');
+      const initialDateBeforeFirstEntry = new Date('2021-04-11');
+      const history = await sut.fetchStockHistory('any_stock', initialDateBeforeFirstEntry, new Date('2021-05-13'));
+
+      expect(history).toEqual({
+        stockName: 'any_stock',
+        history: [
+          new HistoryPrice({
+            opening: 141.45,
+            high: 144.9,
+            low: 141.28,
+            closing: 144.17,
+            volume: 4598920,
+            pricedAt: new Date('2021-05-13'),
+          }),
+          new HistoryPrice({
+            opening: 143.84,
+            high: 144.15,
+            low: 141.14,
+            closing: 141.3,
+            volume: 5959579,
+            pricedAt: new Date('2021-05-12'),
+          }),
+          new HistoryPrice({
+            opening: 144.99,
+            high: 145.19,
+            low: 142.9,
+            closing: 144.22,
+            volume: 7126404,
+            pricedAt: new Date('2021-05-11'),
+          }),
+        ],
+      });
+    });
+
+    it('should empty history when final date is before the first entry', async () => {
+      jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(validHistoryResponse());
+
+      const sut = new AlphaVantageStockingAPI('any');
+      const initialDateBeforeFirstEntry = new Date('2021-04-11');
+      const finalDateBeforeFirstEntry = new Date('2021-04-20');
+
+      const history = await sut.fetchStockHistory('any_stock', initialDateBeforeFirstEntry, finalDateBeforeFirstEntry);
+
+      expect(history).toEqual({
+        stockName: 'any_stock',
+        history: [],
+      });
+    });
+
     it('should returns null when history data ins"t returned', async () => {
       jest.spyOn(alphaVantageApi, 'get').mockResolvedValue(emptyHistoryResponse());
 

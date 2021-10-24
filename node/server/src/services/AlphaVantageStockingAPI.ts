@@ -39,6 +39,8 @@ export class AlphaVantageStockingAPI implements StockingAPI {
     if (!historyData) return null;
 
     const entries = Object.entries(historyData);
+    if (finalDateIsBeforeTheFirstEntry()) return emptyHistory();
+
     const { startIndex, finalIndex } = getRangeIndex();
     const entriesWithinRangeDate = entries.slice(startIndex, finalIndex + 1);
 
@@ -70,6 +72,18 @@ export class AlphaVantageStockingAPI implements StockingAPI {
       const finalIndex = entries.findIndex(([dateStr]) => initialDateStr === dateStr);
       const startIndex = entries.findIndex(([dateStr]) => finalDateStr === dateStr);
       return { startIndex, finalIndex };
+    }
+
+    function finalDateIsBeforeTheFirstEntry() {
+      const dateOfFirstEntry = new Date(entries[entries.length - 1][0]);
+      return Clock.isBefore(finalDate, dateOfFirstEntry);
+    }
+
+    function emptyHistory() {
+      return {
+        stockName: name,
+        history: [],
+      };
     }
   }
 }
