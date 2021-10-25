@@ -11,4 +11,10 @@ export class Formatter {
   static date(date: Date, formatStr: string) {
     return format(date, formatStr);
   }
+
+  static isoText(date: Date) {
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    return `${date.getUTCFullYear()}-${month}-${day}`;
+  }
 }
