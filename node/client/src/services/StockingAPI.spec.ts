@@ -20,7 +20,7 @@ describe('StockingAPI', () => {
   describe('fetchHistory', () => {
     it('should calls get with correct params', async () => {
       await StockingAPI.fetchHistory('any', new Date('2021-10-01'), new Date('2021-10-20'));
-      expect(getApiSpy).toHaveBeenCalledWith('/stock/any/history?from=2021-10-01&to=2021-10-20');
+      expect(getApiSpy).toHaveBeenCalledWith('/stocks/any/history?from=2021-10-01&to=2021-10-20');
     });
     it('should throws StockNotFound when axios return 404 status code', async () => {
       getApiSpy.mockRejectedValue({

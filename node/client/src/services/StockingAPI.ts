@@ -20,7 +20,7 @@ export class StockingAPI {
     try {
       const from = Formatter.isoText(initialDate);
       const to = Formatter.isoText(finalDate);
-      const url = `/stock/${stockName}/history?from=${from}&to=${to}`;
+      const url = `/stocks/${stockName}/history?from=${from}&to=${to}`;
       const { data } = await stockingAPIInstance.get<History>(url);
       return data;
     } catch (error: any) {
