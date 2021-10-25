@@ -1,13 +1,24 @@
 import axios from 'axios';
 
-const api = axios.create({
+export const stockingAPIInstance = axios.create({
   baseURL: 'http://localhost:3000',
 });
 
 export class StockingAPI {
   static async fetchQuote(stockName: string) {
-    const { data } = await api.get<Quote>(`/stock/${stockName}/quote`);
-    return data;
+    try {
+      const { data } = await stockingAPIInstance.get<Quote>(`/stock/${stockName}/quote`);
+      return data;
+    } catch (error: any) {
+      if (error?.response?.status) throw new StockNotFoundError(stockName);
+      throw error;
+    }
+  }
+}
+
+export class StockNotFoundError extends Error {
+  constructor(stockName: string) {
+    super(`Stock with name ${stockName} not found`);
   }
 }
 

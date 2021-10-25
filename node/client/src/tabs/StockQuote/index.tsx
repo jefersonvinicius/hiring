@@ -2,7 +2,7 @@ import React from 'react';
 import { CircularProgress, Paper, Typography } from '@material-ui/core';
 import { Box } from '@material-ui/system';
 import { useQuery } from 'react-query';
-import { StockingAPI } from 'services/StockingAPI';
+import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
 import { Formatter } from 'utils/formatter';
 
 export type StockQuoteProps = {
@@ -16,7 +16,7 @@ function useFetchStockQuote(stockName: string) {
 }
 
 export default function StockQuote({ stockName }: StockQuoteProps) {
-  const { data: quote, isLoading } = useFetchStockQuote(stockName);
+  const { data: quote, isLoading, error } = useFetchStockQuote(stockName);
 
   return (
     <Box>
@@ -31,6 +31,11 @@ export default function StockQuote({ stockName }: StockQuoteProps) {
               Priced At: {quote?.pricedAt.split('-').reverse().join('/')}
             </Typography>
           </Paper>
+        </Box>
+      )}
+      {error instanceof StockNotFoundError && (
+        <Box>
+          <Typography data-testid="quote-not-found-message">Stock with name "{stockName}" not found</Typography>
         </Box>
       )}
     </Box>

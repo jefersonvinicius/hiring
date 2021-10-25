@@ -2,13 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import ReactQueryProvider from 'components/ReactQueryProvider';
+import ReactQueryTestingProvider from 'components/ReactQueryTestingProvider';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ReactQueryProvider>
+    <ReactQueryTestingProvider>
       <App />
-    </ReactQueryProvider>
+    </ReactQueryTestingProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

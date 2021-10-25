@@ -1,8 +1,8 @@
 import { render, waitFor } from '@testing-library/react';
-import ReactQueryProvider from 'components/ReactQueryProvider';
+import ReactQueryTestingProvider from 'components/ReactQueryTestingProvider';
 import React from 'react';
-import { StockingAPI } from 'services/StockingAPI';
-import StockQuote, { StockQuoteProps } from 'StockQuote';
+import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
+import StockQuote, { StockQuoteProps } from '.';
 import { sleep } from 'utils/tests';
 
 describe('StockQuote', () => {
@@ -33,18 +33,26 @@ describe('StockQuote', () => {
     expect(await elements.pricedAt()).toBeInTheDocument();
     expect(await elements.pricedAt()).toHaveTextContent('Priced At: 22/10/2021');
   });
+
+  it('should display not found error when stock name isn"t found', async () => {
+    fetchQuoteSpy.mockRejectedValue(new StockNotFoundError('any'));
+    const { elements } = createSut();
+
+    expect(await elements.notFound()).toHaveTextContent('Stock with name "any" not found');
+  });
 });
 
 function createSut(props: Partial<StockQuoteProps> = {}) {
   const utils = render(
-    <ReactQueryProvider>
+    <ReactQueryTestingProvider>
       <StockQuote stockName="any" {...props} />
-    </ReactQueryProvider>
+    </ReactQueryTestingProvider>
   );
 
   const loadingIndicator = () => utils.findByTestId('quote-loading-indicator');
   const lastPrice = () => utils.findByTestId('quote-last-price');
   const pricedAt = () => utils.findByTestId('quote-priced-at');
+  const notFound = () => utils.findByTestId('quote-not-found-message');
 
-  return { ...utils, elements: { loadingIndicator, lastPrice, pricedAt } };
+  return { ...utils, elements: { loadingIndicator, lastPrice, pricedAt, notFound } };
 }
