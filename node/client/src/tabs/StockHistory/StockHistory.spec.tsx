@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { act, render, fireEvent } from '@testing-library/react';
 import ReactQueryTestingProvider from 'components/ReactQueryTestingProvider';
 import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
 import { Clock } from 'utils/clock';
@@ -37,6 +37,23 @@ describe('StockHistory', () => {
     const { elements } = createSut();
 
     expect(await elements.notFound()).toHaveTextContent('Stock with name "any" not found');
+  });
+
+  it('should update the date of initial date picker and final date picker', async () => {
+    const { elements } = createSut();
+
+    const initialDateInput = await elements.initialDate();
+    const finalDateInput = await elements.finalDate();
+
+    act(() => {
+      fireEvent.change(initialDateInput, { target: { value: '2020-10-01' } });
+    });
+    expect(initialDateInput.value).toBe('2020-10-01');
+
+    act(() => {
+      fireEvent.change(finalDateInput, { target: { value: '2021-10-01' } });
+    });
+    expect(finalDateInput.value).toBe('2021-10-01');
   });
 });
 

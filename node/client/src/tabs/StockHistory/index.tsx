@@ -14,9 +14,13 @@ export type StockHistoryProps = {
 };
 
 function useFetchStockHistory(stockName: string, initialDate: Date, finalDate: Date) {
-  return useQuery(['quote', stockName], () => StockingAPI.fetchHistory(stockName, initialDate, finalDate), {
-    enabled: !!stockName && isAfter(finalDate, initialDate),
-  });
+  return useQuery(
+    ['quote', stockName, initialDate, finalDate],
+    () => StockingAPI.fetchHistory(stockName, initialDate, finalDate),
+    {
+      enabled: !!stockName && isAfter(finalDate, initialDate),
+    }
+  );
 }
 
 const valueFormatterBRL = (params: GridValueFormatterParams) => Formatter.brlCurrency(Number(params.value ?? 0));
@@ -40,11 +44,29 @@ export default function StockHistory({ stockName }: StockHistoryProps) {
   const initialDateStr = useMemo(() => Formatter.isoText(initialDate), [initialDate]);
   const finalDateStr = useMemo(() => Formatter.isoText(finalDate), [finalDate]);
 
+  function handleInitialDateChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setInitialDate(new Date(event.target.value));
+  }
+
+  function handleFinalDateChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setFinalDate(new Date(event.target.value));
+  }
+
   return (
     <Box>
       <Box>
-        <TextField type="date" value={initialDateStr} inputProps={{ 'data-testid': 'history-initial-date' }} />
-        <TextField type="date" value={finalDateStr} inputProps={{ 'data-testid': 'history-final-date' }} />
+        <TextField
+          type="date"
+          onChange={handleInitialDateChange}
+          value={initialDateStr}
+          inputProps={{ 'data-testid': 'history-initial-date' }}
+        />
+        <TextField
+          type="date"
+          onChange={handleFinalDateChange}
+          value={finalDateStr}
+          inputProps={{ 'data-testid': 'history-final-date' }}
+        />
       </Box>
       {isLoading && <CircularProgress data-testid="history-loading-indicator" />}
       {!isLoading && history && (

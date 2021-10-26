@@ -14,13 +14,11 @@ export class Formatter {
   }
 
   static dateUTC(date: Date, formatStr: string) {
-    const zoned = utcToZonedTime(new Date('2021-10-25T00:00:00.000Z'), 'UTC');
+    const zoned = utcToZonedTime(date, 'UTC');
     return formatTZ(zoned, formatStr, { timeZone: 'utc' });
   }
 
   static isoText(date: Date) {
-    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
-    const day = date.getUTCDate().toString().padStart(2, '0');
-    return `${date.getUTCFullYear()}-${month}-${day}`;
+    return this.dateUTC(date, 'yyyy-MM-dd');
   }
 }
