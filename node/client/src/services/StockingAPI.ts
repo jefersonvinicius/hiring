@@ -28,6 +28,18 @@ export class StockingAPI {
       throw error;
     }
   }
+
+  static async fetchStockGains(stockName: string, purchasedAt: Date, amount: number) {
+    try {
+      const purchasedAtTxt = Formatter.isoText(purchasedAt);
+      const url = `/stocks/${stockName}/gains?purchasedAt=${purchasedAtTxt}&purchasedAmount=${amount}`;
+      const { data } = await stockingAPIInstance.get<History>(url);
+      return data;
+    } catch (error: any) {
+      if (error?.response?.status) throw new StockNotFoundError(stockName);
+      throw error;
+    }
+  }
 }
 
 export class StockNotFoundError extends Error {
