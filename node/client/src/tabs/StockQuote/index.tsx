@@ -4,6 +4,7 @@ import { Box } from '@material-ui/system';
 import { useQuery } from 'react-query';
 import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
 import { Formatter } from 'utils/formatter';
+import StockNotFoundMessage from 'components/StockNotFoundMessage';
 
 export type StockQuoteProps = {
   stockName: string;
@@ -33,11 +34,7 @@ export default function StockQuote({ stockName }: StockQuoteProps) {
           </Paper>
         </Box>
       )}
-      {error instanceof StockNotFoundError && (
-        <Box>
-          <Typography data-testid="quote-not-found-message">Stock with name "{stockName}" not found</Typography>
-        </Box>
-      )}
+      {error instanceof StockNotFoundError && <StockNotFoundMessage stockName={stockName} />}
     </Box>
   );
 }

@@ -28,7 +28,7 @@ describe('StockQuote', () => {
 
     const { elements } = createSut();
     expect(await elements.lastPrice()).toBeInTheDocument();
-    expect(await elements.lastPrice()).toHaveTextContent('Last Price: R$27.18');
+    expect(await elements.lastPrice()).toHaveTextContent('Last Price: R$ 27,18');
 
     expect(await elements.pricedAt()).toBeInTheDocument();
     expect(await elements.pricedAt()).toHaveTextContent('Priced At: 22/10/2021');
@@ -52,7 +52,7 @@ function createSut(props: Partial<StockQuoteProps> = {}) {
   const loadingIndicator = () => utils.findByTestId('quote-loading-indicator');
   const lastPrice = () => utils.findByTestId('quote-last-price');
   const pricedAt = () => utils.findByTestId('quote-priced-at');
-  const notFound = () => utils.findByTestId('quote-not-found-message');
+  const notFound = () => utils.findByTestId('stock-not-found-message');
 
   return { ...utils, elements: { loadingIndicator, lastPrice, pricedAt, notFound } };
 }

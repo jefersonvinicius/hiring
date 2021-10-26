@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import ReactQueryTestingProvider from 'components/ReactQueryTestingProvider';
-import { StockingAPI } from 'services/StockingAPI';
+import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
 import { Clock } from 'utils/clock';
 import { sleep } from 'utils/tests';
 import StockHistory, { StockHistoryProps } from '.';
@@ -9,6 +9,7 @@ describe('StockHistory', () => {
   let fetchHistorySpy: jest.SpyInstance;
 
   beforeEach(() => {
+    jest.spyOn(Clock, 'now').mockReturnValue(new Date('2021-10-30T10:00:00.000Z'));
     fetchHistorySpy = jest.spyOn(StockingAPI, 'fetchHistory').mockResolvedValue(validHistory());
   });
 
@@ -25,6 +26,18 @@ describe('StockHistory', () => {
     expect((await elements.initialDate()).value).toBe('2021-09-30');
     expect((await elements.finalDate()).value).toBe('2021-10-30');
   });
+
+  it('should display the DataGrid after load history', async () => {
+    const { elements } = createSut();
+    expect(await elements.dataGrid()).toBeInTheDocument();
+  });
+
+  it('should display not found error when stock name isn"t found', async () => {
+    fetchHistorySpy.mockRejectedValue(new StockNotFoundError('any'));
+    const { elements } = createSut();
+
+    expect(await elements.notFound()).toHaveTextContent('Stock with name "any" not found');
+  });
 });
 
 function createSut(props: Partial<StockHistoryProps> = {}) {
@@ -37,6 +50,8 @@ function createSut(props: Partial<StockHistoryProps> = {}) {
   const loadingIndicator = () => utils.findByTestId('history-loading-indicator');
   const initialDate = async () => (await utils.findByTestId('history-initial-date')) as HTMLInputElement;
   const finalDate = async () => (await utils.findByTestId('history-final-date')) as HTMLInputElement;
+  const dataGrid = () => utils.findByRole('grid');
+  const notFound = () => utils.findByTestId('stock-not-found-message');
 
   return {
     ...utils,
@@ -44,6 +59,8 @@ function createSut(props: Partial<StockHistoryProps> = {}) {
       loadingIndicator,
       initialDate,
       finalDate,
+      dataGrid,
+      notFound,
     },
   };
 }

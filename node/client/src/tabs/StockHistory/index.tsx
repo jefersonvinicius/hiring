@@ -1,10 +1,11 @@
 import { CircularProgress, TextField } from '@material-ui/core';
 import { Box } from '@material-ui/system';
 import { DataGrid, GridColumns, GridValueFormatterParams } from '@mui/x-data-grid';
+import StockNotFoundMessage from 'components/StockNotFoundMessage';
 import { isAfter, subDays } from 'date-fns';
 import React, { useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
-import { StockingAPI } from 'services/StockingAPI';
+import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
 import { Clock } from 'utils/clock';
 import { Formatter } from 'utils/formatter';
 
@@ -48,18 +49,10 @@ export default function StockHistory({ stockName }: StockHistoryProps) {
       {isLoading && <CircularProgress data-testid="history-loading-indicator" />}
       {!isLoading && history && (
         <Box>
-          <DataGrid
-            data-testid="grid"
-            columns={columns}
-            rows={history.prices.map((price) => ({ id: price.pricedAt, ...price }))}
-          />
+          <DataGrid columns={columns} rows={history.prices.map((price) => ({ id: price.pricedAt, ...price }))} />
         </Box>
       )}
-      {/* {error instanceof StockNotFoundError && (
-         <Box>
-           <Typography data-testid="quote-not-found-message">Stock with name "{stockName}" not found</Typography>
-         </Box>
-       )} */}
+      {error instanceof StockNotFoundError && <StockNotFoundMessage stockName={stockName} />}
     </Box>
   );
 }
