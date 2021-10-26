@@ -1,8 +1,8 @@
-import { CircularProgress, TextField } from '@material-ui/core';
+import { CircularProgress, TextField, Typography } from '@material-ui/core';
 import { Box } from '@material-ui/system';
 import { DataGrid, GridColumns, GridValueFormatterParams } from '@mui/x-data-grid';
 import StockNotFoundMessage from 'components/StockNotFoundMessage';
-import { isAfter, subDays } from 'date-fns';
+import { isAfter, isBefore, subDays } from 'date-fns';
 import React, { useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
 import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
@@ -44,6 +44,8 @@ export default function StockHistory({ stockName }: StockHistoryProps) {
   const initialDateStr = useMemo(() => Formatter.isoText(initialDate), [initialDate]);
   const finalDateStr = useMemo(() => Formatter.isoText(finalDate), [finalDate]);
 
+  const isInvalidRangeDate = useMemo(() => isBefore(finalDate, initialDate), [initialDate, finalDate]);
+
   function handleInitialDateChange(event: React.ChangeEvent<HTMLInputElement>) {
     setInitialDate(new Date(event.target.value));
   }
@@ -67,6 +69,11 @@ export default function StockHistory({ stockName }: StockHistoryProps) {
           value={finalDateStr}
           inputProps={{ 'data-testid': 'history-final-date' }}
         />
+        {isInvalidRangeDate && (
+          <Typography data-testid="invalid-date-range-message" color="red">
+            The final date need be greater than initial date!
+          </Typography>
+        )}
       </Box>
       {isLoading && <CircularProgress data-testid="history-loading-indicator" />}
       {!isLoading && history && (

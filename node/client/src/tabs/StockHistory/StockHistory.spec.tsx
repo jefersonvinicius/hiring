@@ -55,6 +55,22 @@ describe('StockHistory', () => {
     });
     expect(finalDateInput.value).toBe('2021-10-01');
   });
+
+  it('should display the error message when range date is invalid', async () => {
+    const { elements } = createSut();
+
+    const initialDateInput = await elements.initialDate();
+    const finalDateInput = await elements.finalDate();
+
+    act(() => {
+      fireEvent.change(initialDateInput, { target: { value: '2021-10-01' } });
+    });
+    act(() => {
+      fireEvent.change(finalDateInput, { target: { value: '2021-09-25' } });
+    });
+
+    expect(await elements.invalidDateRangeMessage()).toBeInTheDocument();
+  });
 });
 
 function createSut(props: Partial<StockHistoryProps> = {}) {
@@ -69,6 +85,7 @@ function createSut(props: Partial<StockHistoryProps> = {}) {
   const finalDate = async () => (await utils.findByTestId('history-final-date')) as HTMLInputElement;
   const dataGrid = () => utils.findByRole('grid');
   const notFound = () => utils.findByTestId('stock-not-found-message');
+  const invalidDateRangeMessage = () => utils.findByTestId('invalid-date-range-message');
 
   return {
     ...utils,
@@ -78,6 +95,7 @@ function createSut(props: Partial<StockHistoryProps> = {}) {
       finalDate,
       dataGrid,
       notFound,
+      invalidDateRangeMessage,
     },
   };
 }
