@@ -1,7 +1,7 @@
+import React from 'react';
 import { act, render, fireEvent, waitFor } from '@testing-library/react';
 import ReactQueryTestingProvider from 'components/ReactQueryTestingProvider';
-import React from 'react';
-import { StockingAPI } from 'services/StockingAPI';
+import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
 import { sleep } from 'utils/tests';
 import { StockGains, StockGainsProps } from '.';
 
@@ -56,6 +56,18 @@ describe('StockGains', () => {
     expect(await elements.oldPriceLabel()).toHaveTextContent('R$ 14,35');
     expect(await elements.currentPriceLabel()).toHaveTextContent('R$ 14,11');
   });
+
+  it('should display not found message when StockingAPI throw the StockNotFoundError', async () => {
+    fetchStockGainsSpy.mockRejectedValue(new StockNotFoundError('Any'));
+
+    const { elements, fillInputs } = createSut({
+      stockName: 'Any',
+    });
+
+    fillInputs();
+
+    expect(await elements.notFound()).toBeInTheDocument();
+  });
 });
 
 function createSut(props: Partial<StockGainsProps> = {}) {
@@ -71,6 +83,7 @@ function createSut(props: Partial<StockGainsProps> = {}) {
   const gainsLabel = () => utils.findByTestId('gains-label');
   const oldPriceLabel = () => utils.findByTestId('gains-old-price-label');
   const currentPriceLabel = () => utils.findByTestId('gains-current-price-label');
+  const notFound = () => utils.findByTestId('stock-not-found-message');
 
   const elements = {
     purchaseAmountInput,
@@ -79,6 +92,7 @@ function createSut(props: Partial<StockGainsProps> = {}) {
     currentPriceLabel,
     oldPriceLabel,
     gainsLabel,
+    notFound,
   };
 
   return { elements, ...utils, fillInputs };

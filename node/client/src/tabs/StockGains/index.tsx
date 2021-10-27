@@ -1,8 +1,9 @@
 import { CircularProgress, Paper, TextField, Typography } from '@material-ui/core';
 import { Box } from '@material-ui/system';
-import React, { useState } from 'react';
+import StockNotFoundMessage from 'components/StockNotFoundMessage';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
-import { StockingAPI } from 'services/StockingAPI';
+import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
 import { Formatter } from 'utils/formatter';
 
 function useFetchStockGains(stockName: string, purchasedAt: Date | null, amount: number) {
@@ -23,11 +24,15 @@ export function StockGains({ stockName }: StockGainsProps) {
   const [amount, setAmount] = useState(10);
   const [date, setDate] = useState<Date | null>(null);
 
-  const { data, isLoading } = useFetchStockGains(stockName, date, amount);
+  const { data, isLoading, error } = useFetchStockGains(stockName, date, amount);
 
   function handleDateChange(event: React.ChangeEvent<HTMLInputElement>) {
     setDate(new Date(event.target.value));
   }
+
+  console.log(error);
+
+  const dateIsoText = useMemo(() => (date ? Formatter.isoText(date) : ''), [date]);
 
   const signal = (data?.capitalGains ?? 0) < 0 ? '-' : '+';
 
@@ -42,7 +47,7 @@ export function StockGains({ stockName }: StockGainsProps) {
         />
         <TextField
           type="date"
-          value={date ?? ''}
+          value={dateIsoText}
           onChange={handleDateChange}
           inputProps={{ 'data-testid': 'gains-date-input' }}
         />
@@ -61,6 +66,7 @@ export function StockGains({ stockName }: StockGainsProps) {
           </Box>
         </Box>
       )}
+      {error instanceof StockNotFoundError && <StockNotFoundMessage stockName={stockName} />}
     </Box>
   );
 }
