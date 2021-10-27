@@ -1,8 +1,9 @@
-import { CircularProgress, TextField } from '@material-ui/core';
+import { CircularProgress, Paper, TextField, Typography } from '@material-ui/core';
 import { Box } from '@material-ui/system';
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { StockingAPI } from 'services/StockingAPI';
+import { Formatter } from 'utils/formatter';
 
 function useFetchStockGains(stockName: string, purchasedAt: Date | null, amount: number) {
   return useQuery(
@@ -28,6 +29,8 @@ export function StockGains({ stockName }: StockGainsProps) {
     setDate(new Date(event.target.value));
   }
 
+  const signal = (data?.capitalGains ?? 0) < 0 ? '-' : '+';
+
   return (
     <Box>
       <form>
@@ -45,6 +48,19 @@ export function StockGains({ stockName }: StockGainsProps) {
         />
       </form>
       {isLoading && <CircularProgress data-testid="gains-loading-indicator" />}
+      {!isLoading && data && (
+        <Box>
+          <Paper>
+            <Typography data-testid="gains-label">
+              {signal} {Formatter.brlCurrency(Math.abs(data.capitalGains))}
+            </Typography>
+          </Paper>
+          <Box>
+            <Typography data-testid="gains-old-price-label">{Formatter.brlCurrency(data.priceAtDate)}</Typography>
+            <Typography data-testid="gains-current-price-label">{Formatter.brlCurrency(data.lastPrice)}</Typography>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }
