@@ -33,7 +33,7 @@ export class StockingAPI {
     try {
       const purchasedAtTxt = Formatter.isoText(purchasedAt);
       const url = `/stocks/${stockName}/gains?purchasedAt=${purchasedAtTxt}&purchasedAmount=${amount}`;
-      const { data } = await stockingAPIInstance.get<History>(url);
+      const { data } = await stockingAPIInstance.get<StockGains>(url);
       return data;
     } catch (error: any) {
       if (error?.response?.status) throw new StockNotFoundError(stockName);
@@ -66,4 +66,13 @@ type HistoryEntry = {
   closing: number;
   pricedAt: string;
   volume: number;
+};
+
+type StockGains = {
+  name: string;
+  lastPrice: number;
+  priceAtDate: number;
+  purchasedAmount: number;
+  purchasedAt: string;
+  capitalGains: number;
 };
