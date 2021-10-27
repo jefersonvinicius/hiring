@@ -44,4 +44,20 @@ describe('StockingAPI', () => {
       await expect(sut).rejects.toThrow(new StockNotFoundError('any'));
     });
   });
+
+  describe('fetchStockComparison', () => {
+    it('should calls get with correct params', async () => {
+      await StockingAPI.fetchStockComparison('any', ['any 1', 'any 2']);
+      expect(getApiSpy).toHaveBeenCalledWith('/stocks/any/compare', {
+        data: { stocks: ['any 1', 'any 2'] },
+      });
+    });
+    it('should throws StockNotFound when axios return 404 status code', async () => {
+      getApiSpy.mockRejectedValue({
+        response: { status: 404 },
+      });
+      const sut = StockingAPI.fetchStockComparison('any', ['any 1', 'any 2']);
+      await expect(sut).rejects.toThrow(new StockNotFoundError('any'));
+    });
+  });
 });

@@ -40,6 +40,17 @@ export class StockingAPI {
       throw error;
     }
   }
+
+  static async fetchStockComparison(stockName: string, stocksToCompare: string[]) {
+    try {
+      const url = `/stocks/${stockName}/compare`;
+      const { data } = await stockingAPIInstance.get<ComparisonResult>(url, { data: { stocks: stocksToCompare } });
+      return data;
+    } catch (error: any) {
+      if (error?.response?.status) throw new StockNotFoundError(stockName);
+      throw error;
+    }
+  }
 }
 
 export class StockNotFoundError extends Error {
@@ -52,6 +63,10 @@ type Quote = {
   name: string;
   lastPrice: number;
   pricedAt: string;
+};
+
+type ComparisonResult = {
+  lastPrices: Quote[];
 };
 
 type History = {
