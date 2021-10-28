@@ -21,6 +21,10 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
     if (stockNameInputRef.current) stockNameInputRef.current.value = '';
   }
 
+  function handleDeleteStock(indexToDelete: number) {
+    setStocks(stocks.filter((_, index) => index !== indexToDelete));
+  }
+
   return (
     <Box>
       <form onSubmit={handleAddStock}>
@@ -34,7 +38,7 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
       <Box>
         {stocks.map((stock, index) => (
           <ListItem key={stock} data-testid={`stock-selected-${index}`}>
-            <Chip label={stock} />
+            <Chip label={stock} onDelete={() => handleDeleteStock(index)} />
           </ListItem>
         ))}
       </Box>
