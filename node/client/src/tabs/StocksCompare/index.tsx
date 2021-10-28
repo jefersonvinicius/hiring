@@ -68,11 +68,16 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
           inputProps={{ 'data-testid': 'stock-name-input' }}
         />
       </form>
-      <Box display="flex" flexDirection="row" justifyContent="center" flexWrap="wrap" p={0.5} m={0}>
+      <Box display="flex" flexDirection="row">
         {stocks.map((stock, index) => (
-          <ListItem key={stock} data-testid={`stock-selected-${index}`}>
-            <Chip label={stock} onDelete={() => handleDeleteStock(index)} />
-          </ListItem>
+          <Box p={1}>
+            <Chip
+              key={stock}
+              data-testid={`stock-selected-${index}`}
+              label={stock}
+              onDelete={() => handleDeleteStock(index)}
+            />
+          </Box>
         ))}
       </Box>
       <Button data-testid="compare-button" variant="contained" color="primary" onClick={handleCompareClick}>
