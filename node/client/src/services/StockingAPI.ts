@@ -44,7 +44,9 @@ export class StockingAPI {
   static async fetchStockComparison(stockName: string, stocksToCompare: string[]) {
     try {
       const url = `/stocks/${stockName}/compare`;
-      const { data } = await stockingAPIInstance.get<ComparisonResult>(url, { data: { stocks: stocksToCompare } });
+      const { data } = await stockingAPIInstance.get<ComparisonResult>(url, {
+        params: { stocksToCompare: stocksToCompare },
+      });
       return data;
     } catch (error: any) {
       if (error?.response?.status) throw new StockNotFoundError(stockName);
@@ -59,7 +61,7 @@ export class StockNotFoundError extends Error {
   }
 }
 
-type Quote = {
+export type Quote = {
   name: string;
   lastPrice: number;
   pricedAt: string;

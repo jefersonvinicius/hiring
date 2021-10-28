@@ -1,6 +1,6 @@
 import React from 'react';
-import { act, render, fireEvent, waitFor } from '@testing-library/react';
-import StocksCompare, { StocksCompareProps } from '.';
+import { act, render, fireEvent, waitFor, within } from '@testing-library/react';
+import StocksCompare, { ColorsStockIndicator, StocksCompareProps } from '.';
 import userEvent from '@testing-library/user-event';
 import { StockingAPI } from 'services/StockingAPI';
 import { sleep } from 'utils/tests';
@@ -65,7 +65,7 @@ describe('StocksCompare', () => {
   });
 
   it('should load the comparison data after click compare button', async () => {
-    fetchStockComparisonSpy.mockResolvedValue(sleep(100));
+    fetchStockComparisonSpy.mockReturnValue(sleep(200));
     const { elements, routines } = createSut({ stockName: 'Any' });
 
     routines.typeInInputStockName('IBM{enter}');
@@ -74,6 +74,41 @@ describe('StocksCompare', () => {
 
     await waitFor(() => expect(fetchStockComparisonSpy).toHaveBeenCalledWith('Any', ['SATA', 'IBM']));
     expect(await elements.loadingIndicator()).toBeInTheDocument();
+  });
+
+  it('should display the comparison data after click compare button', async () => {
+    const { elements, routines } = createSut({ stockName: 'Any' });
+
+    routines.typeInInputStockName('IBM{enter}');
+    routines.typeInInputStockName('SATA{enter}');
+    routines.clickInCompareButton();
+
+    const stockComparing = await elements.stockRow(0);
+    expect(stockComparing.elements.cell('name')).toHaveTextContent('IBM');
+    expect(stockComparing.elements.cell('priced-at')).toHaveTextContent('27/10/2021');
+    expect(stockComparing.elements.cell('price')).toHaveTextContent('R$ 125,17');
+    routines.checkIfDontHaveAnyIndicator(stockComparing.elements.cell('price'));
+
+    const stockToCompare1 = await elements.stockRow(1);
+    expect(stockToCompare1.elements.cell('name')).toHaveTextContent('PETR4.SA');
+    expect(stockToCompare1.elements.cell('priced-at')).toHaveTextContent('27/10/2021');
+    expect(stockToCompare1.elements.cell('price')).toHaveTextContent('R$ 150,00');
+    expect(stockToCompare1.elements.cell('price')).toHaveStyle(`background-color: ${ColorsStockIndicator.Up}`);
+    routines.checkIfHasUpIndicator(stockToCompare1.elements.cell('price'));
+
+    const stockToCompare2 = await elements.stockRow(2);
+    expect(stockToCompare2.elements.cell('name')).toHaveTextContent('VALE3.SA');
+    expect(stockToCompare2.elements.cell('priced-at')).toHaveTextContent('27/10/2021');
+    expect(stockToCompare2.elements.cell('price')).toHaveTextContent('R$ 74,45');
+    expect(stockToCompare2.elements.cell('price')).toHaveStyle(`background-color: ${ColorsStockIndicator.Down}`);
+    routines.checkIfHasDownIndicator(stockToCompare2.elements.cell('price'));
+
+    const stockToCompare3 = await elements.stockRow(3);
+    expect(stockToCompare3.elements.cell('name')).toHaveTextContent('OUTRA.SA');
+    expect(stockToCompare3.elements.cell('priced-at')).toHaveTextContent('27/10/2021');
+    expect(stockToCompare3.elements.cell('price')).toHaveTextContent('R$ 125,17');
+    expect(stockToCompare3.elements.cell('price')).toHaveStyle(`background-color: ${ColorsStockIndicator.Same}`);
+    routines.checkIfDontHaveAnyIndicator(stockToCompare3.elements.cell('price'));
   });
 });
 
@@ -89,6 +124,12 @@ function createSut(props: Partial<StocksCompareProps> = {}) {
   const stocksSelected = () => utils.findAllByTestId(/stock-selected-/);
   const stockSelected = (stockIndex: number) => utils.findByTestId(`stock-selected-${stockIndex}`);
   const loadingIndicator = () => utils.findByTestId('compare-loading-indicator');
+  const stockRow = async (index: number) => {
+    const row = await utils.findByTestId(`stock-row-${index}`);
+    const rowUtils = within(row);
+    const cell = (name: string) => rowUtils.getByTestId(`cell-${name}`);
+    return { root: row, ...rowUtils, elements: { cell } };
+  };
 
   const elements = {
     stockNameInput,
@@ -96,12 +137,16 @@ function createSut(props: Partial<StocksCompareProps> = {}) {
     stockSelected,
     compareButton,
     loadingIndicator,
+    stockRow,
   };
 
   const routines = {
     typeInInputStockName,
     deleteSelectedStock,
     clickInCompareButton,
+    checkIfDontHaveAnyIndicator,
+    checkIfHasDownIndicator,
+    checkIfHasUpIndicator,
   };
 
   return { elements, routines, ...utils };
@@ -125,6 +170,22 @@ function createSut(props: Partial<StocksCompareProps> = {}) {
       fireEvent.click(elements.compareButton());
     });
   }
+
+  function checkIfDontHaveAnyIndicator(element: HTMLElement) {
+    const elementUtils = within(element);
+    expect(elementUtils.queryByTestId('up-indicator')).not.toBeInTheDocument();
+    expect(elementUtils.queryByTestId('down-indicator')).not.toBeInTheDocument();
+  }
+
+  function checkIfHasUpIndicator(element: HTMLElement) {
+    const elementUtils = within(element);
+    expect(elementUtils.getByTestId('up-indicator')).toBeInTheDocument();
+  }
+
+  function checkIfHasDownIndicator(element: HTMLElement) {
+    const elementUtils = within(element);
+    expect(elementUtils.getByTestId('down-indicator')).toBeInTheDocument();
+  }
 }
 
 function validComparisonResponse() {
@@ -137,12 +198,17 @@ function validComparisonResponse() {
       },
       {
         name: 'PETR4.SA',
-        lastPrice: 28.69,
+        lastPrice: 150.0,
         pricedAt: '2021-10-27',
       },
       {
         name: 'VALE3.SA',
         lastPrice: 74.45,
+        pricedAt: '2021-10-27',
+      },
+      {
+        name: 'OUTRA.SA',
+        lastPrice: 125.17,
         pricedAt: '2021-10-27',
       },
     ],
