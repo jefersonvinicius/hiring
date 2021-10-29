@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Typography,
 } from '@material-ui/core';
 import { ArrowDropDown, ArrowDropUp } from '@material-ui/icons';
 import { Box } from '@material-ui/system';
@@ -62,9 +63,9 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
 
   return (
     <Box>
-      {error instanceof StockNotFoundError ? (
-        <StockNotFoundMessage stockName={stockName} />
-      ) : (
+      {error instanceof StockNotFoundError && <StockNotFoundMessage stockName={stockName} />}
+
+      {!error && (
         <>
           <form onSubmit={handleAddStock}>
             <TextField
@@ -86,14 +87,20 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
           </Button>
           {isLoading && <CircularProgress data-testid="compare-loading-indicator" />}
           {!isLoading && data && (
-            <Table>
-              <TableHeading />
-              <TableBody>
-                {data.lastPrices.map((quote, index) => (
-                  <StockRow key={quote.name} quoteComparing={data.lastPrices[0]} quote={quote} index={index} />
-                ))}
-              </TableBody>
-            </Table>
+            <>
+              {data.lastPrices.length === 1 ? (
+                <Typography data-testid="not-found-stocks-to-compare">Any of stocks to compare was found</Typography>
+              ) : (
+                <Table>
+                  <TableHeading />
+                  <TableBody>
+                    {data.lastPrices.map((quote, index) => (
+                      <StockRow key={quote.name} quoteComparing={data.lastPrices[0]} quote={quote} index={index} />
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </>
           )}
         </>
       )}

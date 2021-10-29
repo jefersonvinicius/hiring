@@ -121,6 +121,17 @@ describe('StocksCompare', () => {
 
     expect(await elements.notFound()).toBeInTheDocument();
   });
+
+  it('should display not stocks to compare', async () => {
+    fetchStockComparisonSpy.mockResolvedValue(comparisonWithoutToCompareTarget());
+    const { elements, routines } = createSut();
+
+    routines.typeInInputStockName('IBM{enter}');
+    routines.typeInInputStockName('SATA{enter}');
+    routines.clickInCompareButton();
+
+    expect(await elements.notFoundStocksToCompare()).toBeInTheDocument();
+  });
 });
 
 function createSut(props: Partial<StocksCompareProps> = {}) {
@@ -136,6 +147,7 @@ function createSut(props: Partial<StocksCompareProps> = {}) {
   const stockSelected = (stockIndex: number) => utils.findByTestId(`stock-selected-${stockIndex}`);
   const loadingIndicator = () => utils.findByTestId('compare-loading-indicator');
   const notFound = () => utils.findByTestId('stock-not-found-message');
+  const notFoundStocksToCompare = () => utils.findByTestId('not-found-stocks-to-compare');
 
   const stockRow = async (index: number) => {
     const row = await utils.findByTestId(`stock-row-${index}`);
@@ -152,6 +164,7 @@ function createSut(props: Partial<StocksCompareProps> = {}) {
     loadingIndicator,
     stockRow,
     notFound,
+    notFoundStocksToCompare,
   };
 
   const routines = {
@@ -222,6 +235,18 @@ function validComparisonResponse() {
       },
       {
         name: 'OUTRA.SA',
+        lastPrice: 125.17,
+        pricedAt: '2021-10-27',
+      },
+    ],
+  };
+}
+
+function comparisonWithoutToCompareTarget() {
+  return {
+    lastPrices: [
+      {
+        name: 'IBM',
         lastPrice: 125.17,
         pricedAt: '2021-10-27',
       },
