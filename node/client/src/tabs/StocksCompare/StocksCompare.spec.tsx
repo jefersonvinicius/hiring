@@ -2,7 +2,7 @@ import React from 'react';
 import { act, render, fireEvent, waitFor, within } from '@testing-library/react';
 import StocksCompare, { ColorsStockIndicator, StocksCompareProps } from '.';
 import userEvent from '@testing-library/user-event';
-import { StockingAPI } from 'services/StockingAPI';
+import { StockingAPI, StockNotFoundError } from 'services/StockingAPI';
 import { sleep } from 'utils/tests';
 import ReactQueryTestingProvider from 'components/ReactQueryTestingProvider';
 
@@ -110,6 +110,17 @@ describe('StocksCompare', () => {
     expect(stockToCompare3.elements.cell('price')).toHaveStyle(`background-color: ${ColorsStockIndicator.Same}`);
     routines.checkIfDontHaveAnyIndicator(stockToCompare3.elements.cell('price'));
   });
+
+  it('should display not found message when stock was not found', async () => {
+    fetchStockComparisonSpy.mockRejectedValue(new StockNotFoundError('Any'));
+    const { elements, routines } = createSut();
+
+    routines.typeInInputStockName('IBM{enter}');
+    routines.typeInInputStockName('SATA{enter}');
+    routines.clickInCompareButton();
+
+    expect(await elements.notFound()).toBeInTheDocument();
+  });
 });
 
 function createSut(props: Partial<StocksCompareProps> = {}) {
@@ -124,6 +135,8 @@ function createSut(props: Partial<StocksCompareProps> = {}) {
   const stocksSelected = () => utils.findAllByTestId(/stock-selected-/);
   const stockSelected = (stockIndex: number) => utils.findByTestId(`stock-selected-${stockIndex}`);
   const loadingIndicator = () => utils.findByTestId('compare-loading-indicator');
+  const notFound = () => utils.findByTestId('stock-not-found-message');
+
   const stockRow = async (index: number) => {
     const row = await utils.findByTestId(`stock-row-${index}`);
     const rowUtils = within(row);
@@ -138,6 +151,7 @@ function createSut(props: Partial<StocksCompareProps> = {}) {
     compareButton,
     loadingIndicator,
     stockRow,
+    notFound,
   };
 
   const routines = {

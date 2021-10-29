@@ -2,7 +2,6 @@ import {
   Button,
   Chip,
   CircularProgress,
-  ListItem,
   Table,
   TableBody,
   TableCell,
@@ -12,9 +11,10 @@ import {
 } from '@material-ui/core';
 import { ArrowDropDown, ArrowDropUp } from '@material-ui/icons';
 import { Box } from '@material-ui/system';
+import StockNotFoundMessage from 'components/StockNotFoundMessage';
 import React, { useRef, useState } from 'react';
 import { useQuery } from 'react-query';
-import { Quote, StockingAPI } from 'services/StockingAPI';
+import { Quote, StockingAPI, StockNotFoundError } from 'services/StockingAPI';
 import { Formatter } from 'utils/formatter';
 
 function useFetchStockComparison(stockName: string, stocksToCompare: string[]) {
@@ -36,7 +36,7 @@ export type StocksCompareProps = {
 export default function StocksCompare({ stockName }: StocksCompareProps) {
   const [stocks, setStocks] = useState<string[]>([]);
 
-  const { data, refetch, isLoading } = useFetchStockComparison(stockName, stocks);
+  const { data, refetch, isLoading, error } = useFetchStockComparison(stockName, stocks);
 
   const stockNameInputRef = useRef<HTMLInputElement>(null);
 
@@ -58,41 +58,44 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
     refetch();
   }
 
+  console.log(error);
+
   return (
     <Box>
-      <form onSubmit={handleAddStock}>
-        <TextField
-          inputRef={stockNameInputRef}
-          type="text"
-          name="stockName"
-          inputProps={{ 'data-testid': 'stock-name-input' }}
-        />
-      </form>
-      <Box display="flex" flexDirection="row">
-        {stocks.map((stock, index) => (
-          <Box p={1}>
-            <Chip
-              key={stock}
-              data-testid={`stock-selected-${index}`}
-              label={stock}
-              onDelete={() => handleDeleteStock(index)}
+      {error instanceof StockNotFoundError ? (
+        <StockNotFoundMessage stockName={stockName} />
+      ) : (
+        <>
+          <form onSubmit={handleAddStock}>
+            <TextField
+              inputRef={stockNameInputRef}
+              type="text"
+              name="stockName"
+              inputProps={{ 'data-testid': 'stock-name-input' }}
             />
-          </Box>
-        ))}
-      </Box>
-      <Button data-testid="compare-button" variant="contained" color="primary" onClick={handleCompareClick}>
-        Compare
-      </Button>
-      {isLoading && <CircularProgress data-testid="compare-loading-indicator" />}
-      {!isLoading && data && (
-        <Table>
-          <TableHeading />
-          <TableBody>
-            {data.lastPrices.map((quote, index) => (
-              <StockRow key={quote.name} quoteComparing={data.lastPrices[0]} quote={quote} index={index} />
+          </form>
+          <Box display="flex" flexDirection="row">
+            {stocks.map((stock, index) => (
+              <Box p={1} key={stock}>
+                <Chip data-testid={`stock-selected-${index}`} label={stock} onDelete={() => handleDeleteStock(index)} />
+              </Box>
             ))}
-          </TableBody>
-        </Table>
+          </Box>
+          <Button data-testid="compare-button" variant="contained" color="primary" onClick={handleCompareClick}>
+            Compare
+          </Button>
+          {isLoading && <CircularProgress data-testid="compare-loading-indicator" />}
+          {!isLoading && data && (
+            <Table>
+              <TableHeading />
+              <TableBody>
+                {data.lastPrices.map((quote, index) => (
+                  <StockRow key={quote.name} quoteComparing={data.lastPrices[0]} quote={quote} index={index} />
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </>
       )}
     </Box>
   );
@@ -122,8 +125,10 @@ function StockRow({ quoteComparing, quote, index }: StockRowProps) {
     <TableRow data-testid={`stock-row-${index}`}>
       <TableCell data-testid="cell-name">{quote.name}</TableCell>
       <TableCell data-testid="cell-price" style={{ backgroundColor: priceCellColor() }}>
-        {indicator()}
-        {Formatter.brlCurrency(quote.lastPrice)}
+        <Box display="flex" alignItems="center">
+          {indicator()}
+          {Formatter.brlCurrency(quote.lastPrice)}
+        </Box>
       </TableCell>
       <TableCell data-testid="cell-priced-at">{Formatter.dateUTC(new Date(quote.pricedAt), 'dd/MM/yyyy')}</TableCell>
     </TableRow>
