@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { format as formatTZ, utcToZonedTime } from 'date-fns-tz';
 
 export class Formatter {
@@ -7,10 +6,6 @@ export class Formatter {
       style: 'currency',
       currency: 'BRL',
     }).format(value);
-  }
-
-  static date(date: Date, formatStr: string) {
-    return format(date, formatStr);
   }
 
   static dateUTC(date: Date, formatStr: string) {

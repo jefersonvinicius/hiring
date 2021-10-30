@@ -65,7 +65,7 @@ describe('StocksCompare', () => {
   });
 
   it('should load the comparison data after click compare button', async () => {
-    fetchStockComparisonSpy.mockReturnValue(sleep(200));
+    fetchStockComparisonSpy.mockImplementation(() => sleep(200));
     const { elements, routines } = createSut({ stockName: 'Any' });
 
     routines.typeInInputStockName('IBM{enter}');

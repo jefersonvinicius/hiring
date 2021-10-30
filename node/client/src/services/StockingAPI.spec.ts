@@ -40,7 +40,7 @@ describe('StockingAPI', () => {
     });
     it('should throw the error when get method throws', async () => {
       getApiSpy.mockRejectedValue(new Error('any'));
-      const sut = StockingAPI.fetchQuote('any');
+      const sut = StockingAPI.fetchHistory('any', new Date('2021-10-01'), new Date('2021-10-20'));
       await expect(sut).rejects.toThrow(new Error('any'));
     });
   });
@@ -59,7 +59,7 @@ describe('StockingAPI', () => {
     });
     it('should throw the error when get method throws', async () => {
       getApiSpy.mockRejectedValue(new Error('any'));
-      const sut = StockingAPI.fetchQuote('any');
+      const sut = StockingAPI.fetchStockGains('any', new Date('2021-10-01'), 10);
       await expect(sut).rejects.toThrow(new Error('any'));
     });
   });
@@ -77,6 +77,11 @@ describe('StockingAPI', () => {
       });
       const sut = StockingAPI.fetchStockComparison('any', ['any 1', 'any 2']);
       await expect(sut).rejects.toThrow(new StockNotFoundError('any'));
+    });
+    it('should throw the error when get method throws', async () => {
+      getApiSpy.mockRejectedValue(new Error('any'));
+      const sut = StockingAPI.fetchStockComparison('any', ['any 1', 'any 2']);
+      await expect(sut).rejects.toThrow(new Error('any'));
     });
   });
 });
