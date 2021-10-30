@@ -56,7 +56,7 @@ export default function StockHistory({ stockName }: StockHistoryProps) {
   }
 
   return (
-    <Box height="100%">
+    <Box height="100%" data-testid="stock-history">
       <Box display="flex" flexDirection="row" justifyContent="center" p={2}>
         <TextField
           type="date"

@@ -41,7 +41,7 @@ export function StockGains({ stockName }: StockGainsProps) {
   const textIndicator = signal === '-' ? 'Loss' : 'Gains';
 
   return (
-    <Box>
+    <Box data-testid="stock-gains">
       <Form>
         <TextField
           type="number"

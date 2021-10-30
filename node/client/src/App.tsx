@@ -32,16 +32,20 @@ export default function App() {
       <AppBar position="static">
         <Toolbar>
           <Tabs value={tab} onChange={(_, newTab) => setTab(newTab)} textColor="inherit">
-            <Tab label="Quote" />
-            <Tab label="History" />
-            <Tab label="Comparison" />
-            <Tab label="Gains / Loss" />
+            <Tab label="Quote" data-testid="tab-button-quote" />
+            <Tab label="History" data-testid="tab-button-history" />
+            <Tab label="Comparison" data-testid="tab-button-compare" />
+            <Tab label="Gains / Loss" data-testid="tab-button-gains" />
           </Tabs>
           <SearchBox onSubmit={handleSubmitSearch}>
             <SearchIconBox>
               <SearchIcon />
             </SearchIconBox>
-            <SearchInput inputRef={searchInputRef} placeholder="Stock name..." />
+            <SearchInput
+              inputProps={{ 'data-testid': 'search-input' }}
+              inputRef={searchInputRef}
+              placeholder="Stock name..."
+            />
           </SearchBox>
         </Toolbar>
       </AppBar>

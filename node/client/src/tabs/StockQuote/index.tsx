@@ -21,7 +21,7 @@ export default function StockQuote({ stockName }: StockQuoteProps) {
   const { data: quote, isLoading, error } = useFetchStockQuote(stockName);
 
   return (
-    <BoxCentered>
+    <BoxCentered testID="stock-quote">
       {isLoading && <CircularProgress data-testid="quote-loading-indicator" />}
       {!isLoading && quote && !error && (
         <Box display="flex" flexDirection="column" alignItems="center">

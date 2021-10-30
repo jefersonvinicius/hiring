@@ -62,7 +62,7 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
   console.log(data);
 
   return (
-    <Box>
+    <Box data-testid="stocks-compare">
       <Box p={2}>
         <form onSubmit={handleAddStock}>
           <TextField
