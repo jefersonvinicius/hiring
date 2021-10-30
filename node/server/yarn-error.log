@@ -2,7 +2,7 @@ Arguments:
   /opt/node-v14.15.5-linux-x64/bin/node /usr/share/yarn/bin/yarn.js ts-node src/index.ts
 
 PATH: 
-  /home/jeferson/Dev/projects/hiring/node/server/node_modules/.bin:/tmp/yarn--1635462630755-0.9081787729120441:/home/jeferson/Dev/projects/hiring/node/server/node_modules/.bin:/home/jeferson/.config/yarn/link/node_modules/.bin:/home/jeferson/.yarn/bin:/opt/node-v14.15.5-linux-x64/libexec/lib/node_modules/npm/bin/node-gyp-bin:/opt/node-v14.15.5-linux-x64/lib/node_modules/npm/bin/node-gyp-bin:/opt/node-v14.15.5-linux-x64/bin/node_modules/npm/bin/node-gyp-bin:/opt/node-v14.15.5-linux-x64/bin:/home/jeferson/.sdkman/candidates/kotlin/current/bin:/home/jeferson/Programs/google-cloud-sdk/bin:/opt/node-v14.15.5-linux-x64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/jeferson/Android/Sdk/tools:/home/jeferson/Android/Sdk/platform-tools:/home/jeferson/Dev/goworkspace/:/home/jeferson/Dev/goworkspace/bin:/home/jeferson/Scripts:/usr/local/go/bin:/home/jeferson/Android/Sdk/tools:/home/jeferson/Android/Sdk/platform-tools:/home/jeferson/Dev/goworkspace/:/home/jeferson/Dev/goworkspace/bin:/home/jeferson/Scripts:/usr/local/go/bin
+  /home/jeferson/Dev/projects/hiring/node/server/node_modules/.bin:/tmp/yarn--1635625256480-0.18849181765480694:/home/jeferson/Dev/projects/hiring/node/server/node_modules/.bin:/home/jeferson/.config/yarn/link/node_modules/.bin:/home/jeferson/.yarn/bin:/opt/node-v14.15.5-linux-x64/libexec/lib/node_modules/npm/bin/node-gyp-bin:/opt/node-v14.15.5-linux-x64/lib/node_modules/npm/bin/node-gyp-bin:/opt/node-v14.15.5-linux-x64/bin/node_modules/npm/bin/node-gyp-bin:/opt/node-v14.15.5-linux-x64/bin:/home/jeferson/.sdkman/candidates/kotlin/current/bin:/home/jeferson/Programs/google-cloud-sdk/bin:/opt/node-v14.15.5-linux-x64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/jeferson/Android/Sdk/tools:/home/jeferson/Android/Sdk/platform-tools:/home/jeferson/Dev/goworkspace/:/home/jeferson/Dev/goworkspace/bin:/home/jeferson/Scripts:/usr/local/go/bin:/home/jeferson/Android/Sdk/tools:/home/jeferson/Android/Sdk/platform-tools:/home/jeferson/Dev/goworkspace/:/home/jeferson/Dev/goworkspace/bin:/home/jeferson/Scripts:/usr/local/go/bin
 
 Yarn version: 
   1.22.5
@@ -52,6 +52,7 @@ npm manifest:
     "scripts": {
       "test:unit": "TZ=utc jest --watch",
       "test": "TZ=utc jest",
+      "test:coverage": "yarn test --coverage",
       "dev": "nodemon",
       "build": "rimraf ./build && tsc -p tsconfig.build.json",
       "start": "yarn build && node -r ts-node/register/transpile-only -r tsconfig-paths/register build/index.js"
