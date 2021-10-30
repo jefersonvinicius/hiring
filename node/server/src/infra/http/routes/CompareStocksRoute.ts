@@ -28,6 +28,6 @@ export class CompareStocksRoute implements Route<CompareStocksViewModel> {
 
 export class InvalidStocksToCompareError extends Error {
   constructor() {
-    super('The stocks body field was not provided or was provided as empty array');
+    super('The stocks to compare was not provided or was provided as empty array');
   }
 }
