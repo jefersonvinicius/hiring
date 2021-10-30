@@ -63,64 +63,62 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
 
   return (
     <Box>
-      {error instanceof StockNotFoundError && <StockNotFoundMessage stockName={stockName} />}
+      <Box p={2}>
+        <form onSubmit={handleAddStock}>
+          <TextField
+            fullWidth
+            inputRef={stockNameInputRef}
+            placeholder="Type the stock name and press Enter"
+            type="text"
+            name="stockName"
+            inputProps={{ 'data-testid': 'stock-name-input' }}
+          />
+        </form>
+        <Box display="flex" flexDirection="row">
+          {stocks.map((stock, index) => (
+            <Box p={1} key={stock}>
+              <Chip data-testid={`stock-selected-${index}`} label={stock} onDelete={() => handleDeleteStock(index)} />
+            </Box>
+          ))}
+        </Box>
+        <Box display="flex" justifyContent="center" mt={2}>
+          <Button
+            disabled={stocks.length === 0}
+            data-testid="compare-button"
+            variant="contained"
+            color="primary"
+            onClick={handleCompareClick}
+          >
+            Compare
+          </Button>
+        </Box>
+      </Box>
 
-      {!error && (
+      {isLoading && (
+        <Box display="flex" justifyContent="center">
+          <CircularProgress data-testid="compare-loading-indicator" />
+        </Box>
+      )}
+
+      {!isLoading && error instanceof StockNotFoundError && (
+        <Box display="flex" justifyContent="center">
+          <StockNotFoundMessage stockName={stockName} />
+        </Box>
+      )}
+
+      {!isLoading && data && !error && (
         <>
-          <Box p={2}>
-            <form onSubmit={handleAddStock}>
-              <TextField
-                fullWidth
-                inputRef={stockNameInputRef}
-                placeholder="Type the stock name and press Enter"
-                type="text"
-                name="stockName"
-                inputProps={{ 'data-testid': 'stock-name-input' }}
-              />
-            </form>
-            <Box display="flex" flexDirection="row">
-              {stocks.map((stock, index) => (
-                <Box p={1} key={stock}>
-                  <Chip
-                    data-testid={`stock-selected-${index}`}
-                    label={stock}
-                    onDelete={() => handleDeleteStock(index)}
-                  />
-                </Box>
-              ))}
-            </Box>
-            <Box display="flex" justifyContent="center" mt={2}>
-              <Button
-                disabled={stocks.length === 0}
-                data-testid="compare-button"
-                variant="contained"
-                color="primary"
-                onClick={handleCompareClick}
-              >
-                Compare
-              </Button>
-            </Box>
-          </Box>
-          {isLoading && (
-            <Box display="flex" justifyContent="center">
-              <CircularProgress data-testid="compare-loading-indicator" />
-            </Box>
-          )}
-          {!isLoading && data && (
-            <>
-              {data.lastPrices.length === 1 ? (
-                <Typography data-testid="not-found-stocks-to-compare">Any of stocks to compare was found</Typography>
-              ) : (
-                <Table>
-                  <TableHeading />
-                  <TableBody>
-                    {data.lastPrices.map((quote, index) => (
-                      <StockRow key={quote.name} quoteComparing={data.lastPrices[0]} quote={quote} index={index} />
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </>
+          {data.lastPrices.length === 1 ? (
+            <Typography data-testid="not-found-stocks-to-compare">Any of stocks to compare was found</Typography>
+          ) : (
+            <Table>
+              <TableHeading />
+              <TableBody>
+                {data.lastPrices.map((quote, index) => (
+                  <StockRow key={quote.name} quoteComparing={data.lastPrices[0]} quote={quote} index={index} />
+                ))}
+              </TableBody>
+            </Table>
           )}
         </>
       )}
