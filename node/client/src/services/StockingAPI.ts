@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Formatter } from 'utils/formatter';
 
 export const stockingAPIInstance = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://localhost:3001',
 });
 
 export class StockingAPI {
