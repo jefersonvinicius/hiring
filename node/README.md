@@ -14,7 +14,7 @@ A aplicação será iniciado em: http://localhost:3001
 
 ---
 
-Para rodar testes você pode usar o comando:
+Para rodar todos os testes você pode usar o comando:
 ```
 yarn test:coverage
 ```
@@ -36,3 +36,10 @@ yarn start
 A aplicação será servida em http://localhost:3000
 
 > TENHA CERTEZA DE TER INICIADO O BACKEND ANTES.
+
+---
+
+Para rodar todos os testes você pode usar o comando:
+```
+yarn test:coverage
+```
