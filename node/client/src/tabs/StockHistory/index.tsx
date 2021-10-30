@@ -55,25 +55,31 @@ export default function StockHistory({ stockName }: StockHistoryProps) {
     setFinalDate(new Date(event.target.value));
   }
 
+  const todayIsoText = useMemo(() => {
+    return Formatter.isoText(new Date());
+  }, []);
+
   return (
     <Box height="100%" data-testid="stock-history">
-      <Box display="flex" flexDirection="row" justifyContent="center" p={2}>
-        <TextField
-          type="date"
-          label="Initial Date"
-          onChange={handleInitialDateChange}
-          value={initialDateStr}
-          inputProps={{ 'data-testid': 'history-initial-date' }}
-        />
-        <TextField
-          type="date"
-          label="Final Date"
-          onChange={handleFinalDateChange}
-          value={finalDateStr}
-          inputProps={{ 'data-testid': 'history-final-date' }}
-        />
+      <Box>
+        <Box display="flex" flexDirection="row" justifyContent="center" p={2}>
+          <TextField
+            type="date"
+            label="Initial Date"
+            onChange={handleInitialDateChange}
+            value={initialDateStr}
+            inputProps={{ 'data-testid': 'history-initial-date', max: todayIsoText }}
+          />
+          <TextField
+            type="date"
+            label="Final Date"
+            onChange={handleFinalDateChange}
+            value={finalDateStr}
+            inputProps={{ 'data-testid': 'history-final-date', max: todayIsoText }}
+          />
+        </Box>
         {isInvalidRangeDate && (
-          <Typography data-testid="invalid-date-range-message" color="red">
+          <Typography data-testid="invalid-date-range-message" align="center" color="red">
             The final date need be greater than initial date!
           </Typography>
         )}
