@@ -8,12 +8,21 @@ describe('StockingAPI', () => {
   });
 
   describe('fetchQuote', () => {
+    it('should calls get with correct params', async () => {
+      await StockingAPI.fetchQuote('any');
+      expect(getApiSpy).toHaveBeenCalledWith('/stock/any/quote');
+    });
     it('should throws StockNotFound when axios return 404 status code', async () => {
       getApiSpy.mockRejectedValue({
         response: { status: 404 },
       });
       const sut = StockingAPI.fetchQuote('any');
       await expect(sut).rejects.toThrow(new StockNotFoundError('any'));
+    });
+    it('should throw the error when get method throws', async () => {
+      getApiSpy.mockRejectedValue(new Error('any'));
+      const sut = StockingAPI.fetchQuote('any');
+      await expect(sut).rejects.toThrow(new Error('any'));
     });
   });
 
@@ -29,6 +38,11 @@ describe('StockingAPI', () => {
       const sut = StockingAPI.fetchHistory('any', new Date('2021-10-01'), new Date('2021-10-20'));
       await expect(sut).rejects.toThrow(new StockNotFoundError('any'));
     });
+    it('should throw the error when get method throws', async () => {
+      getApiSpy.mockRejectedValue(new Error('any'));
+      const sut = StockingAPI.fetchQuote('any');
+      await expect(sut).rejects.toThrow(new Error('any'));
+    });
   });
 
   describe('fetchStockGains', () => {
@@ -42,6 +56,11 @@ describe('StockingAPI', () => {
       });
       const sut = StockingAPI.fetchStockGains('any', new Date('2021-10-01'), 10);
       await expect(sut).rejects.toThrow(new StockNotFoundError('any'));
+    });
+    it('should throw the error when get method throws', async () => {
+      getApiSpy.mockRejectedValue(new Error('any'));
+      const sut = StockingAPI.fetchQuote('any');
+      await expect(sut).rejects.toThrow(new Error('any'));
     });
   });
 
