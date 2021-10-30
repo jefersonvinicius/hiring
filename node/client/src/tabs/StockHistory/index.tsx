@@ -86,7 +86,7 @@ export default function StockHistory({ stockName }: StockHistoryProps) {
       {!isLoading && history && (
         <Box p={2}>
           <DataGrid
-            rowsPerPageOptions={[]}
+            rowsPerPageOptions={[100]}
             disableColumnMenu
             columns={columns}
             rows={history.prices.map((price) => ({ id: price.pricedAt, ...price }))}

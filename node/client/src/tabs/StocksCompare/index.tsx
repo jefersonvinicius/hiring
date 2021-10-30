@@ -59,8 +59,6 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
     refetch();
   }
 
-  console.log(data);
-
   return (
     <Box data-testid="stocks-compare">
       <Box p={2}>
@@ -109,7 +107,9 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
       {!isLoading && data && !error && (
         <>
           {data.lastPrices.length === 1 ? (
-            <Typography data-testid="not-found-stocks-to-compare">Any of stocks to compare was found</Typography>
+            <Box display="flex" justifyContent="center">
+              <Typography data-testid="not-found-stocks-to-compare">No stocks to compare was found</Typography>
+            </Box>
           ) : (
             <Table>
               <TableHeading />
