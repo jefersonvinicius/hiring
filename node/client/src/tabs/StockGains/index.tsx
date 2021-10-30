@@ -37,6 +37,10 @@ export function StockGains({ stockName }: StockGainsProps) {
 
   const dateIsoText = useMemo(() => (date ? Formatter.isoText(date) : ''), [date]);
 
+  const todayIsoText = useMemo(() => {
+    return Formatter.isoText(new Date());
+  }, []);
+
   const signal = (data?.capitalGains ?? 0) < 0 ? '-' : '+';
   const textIndicator = signal === '-' ? 'Loss' : 'Gains';
 
@@ -58,7 +62,7 @@ export function StockGains({ stockName }: StockGainsProps) {
             shrink: true,
           }}
           onChange={handleDateChange}
-          inputProps={{ 'data-testid': 'gains-date-input' }}
+          inputProps={{ 'data-testid': 'gains-date-input', max: todayIsoText }}
         />
       </Form>
       {isLoading && (
