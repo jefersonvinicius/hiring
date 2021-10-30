@@ -17,12 +17,15 @@ describe('CompareStocksRoute', () => {
     ]);
     const httpRequest = new HttpRequest({
       params: { stockName: 'any' },
-      body: { stocks: ['any 2', 'any 3'] },
+      query: { stocksToCompare: ['any 2', 'any 3'] },
     });
 
     const response = await sut.handle(httpRequest);
 
-    expect(useCaseSpies.execute).toHaveBeenCalledWith({ stockNames: ['any', 'any 2', 'any 3'] });
+    expect(useCaseSpies.execute).toHaveBeenCalledWith({
+      stockNameComparing: 'any',
+      stockNamesToCompare: ['any 2', 'any 3'],
+    });
     expect(response.statusCode).toBe(200);
     const body = parseViewModel(response.body as CompareStocksViewModel);
     expect(body).toMatchObject({

@@ -10,11 +10,15 @@ export class CompareStocksRoute implements Route<CompareStocksViewModel> {
 
   async handle(httpRequest: HttpRequest): Promise<HttpResponse<CompareStocksViewModel>> {
     try {
-      const stocksToCompare = httpRequest.body.stocks;
+      const stocksToCompare = httpRequest.query.stocksToCompare;
+      const stockComparing = httpRequest.params.stockName;
+
       if (!stocksToCompare || stocksToCompare.length === 0) throw new InvalidStocksToCompareError();
 
-      const stockName = [httpRequest.params.stockName, ...stocksToCompare];
-      const result = await this.compareStocksUseCase.execute({ stockNames: stockName });
+      const result = await this.compareStocksUseCase.execute({
+        stockNamesToCompare: stocksToCompare,
+        stockNameComparing: stockComparing,
+      });
       return { statusCode: HttpStatusCode.Ok, body: new CompareStocksViewModel(result) };
     } catch (error) {
       return HttpResponseUtils.createErrorResponse(error);
