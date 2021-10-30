@@ -1,6 +1,7 @@
 import { CircularProgress, TextField, Typography } from '@material-ui/core';
 import { Box } from '@material-ui/system';
 import { DataGrid, GridColumns, GridValueFormatterParams } from '@mui/x-data-grid';
+import { BoxCentered } from 'components/MaterialUIExtended';
 import StockNotFoundMessage from 'components/StockNotFoundMessage';
 import { isAfter, isBefore, subDays } from 'date-fns';
 import React, { useMemo, useState } from 'react';
@@ -55,16 +56,18 @@ export default function StockHistory({ stockName }: StockHistoryProps) {
   }
 
   return (
-    <Box>
-      <Box>
+    <Box height="100%">
+      <Box display="flex" flexDirection="row" justifyContent="center" p={2}>
         <TextField
           type="date"
+          label="Initial Date"
           onChange={handleInitialDateChange}
           value={initialDateStr}
           inputProps={{ 'data-testid': 'history-initial-date' }}
         />
         <TextField
           type="date"
+          label="Final Date"
           onChange={handleFinalDateChange}
           value={finalDateStr}
           inputProps={{ 'data-testid': 'history-final-date' }}
@@ -75,13 +78,26 @@ export default function StockHistory({ stockName }: StockHistoryProps) {
           </Typography>
         )}
       </Box>
-      {isLoading && <CircularProgress data-testid="history-loading-indicator" />}
+      {isLoading && (
+        <BoxCentered>
+          <CircularProgress data-testid="history-loading-indicator" />
+        </BoxCentered>
+      )}
       {!isLoading && history && (
-        <Box>
-          <DataGrid columns={columns} rows={history.prices.map((price) => ({ id: price.pricedAt, ...price }))} />
+        <Box p={2}>
+          <DataGrid
+            rowsPerPageOptions={[]}
+            disableColumnMenu
+            columns={columns}
+            rows={history.prices.map((price) => ({ id: price.pricedAt, ...price }))}
+          />
         </Box>
       )}
-      {error instanceof StockNotFoundError && <StockNotFoundMessage stockName={stockName} />}
+      {error instanceof StockNotFoundError && (
+        <Box display="flex" justifyContent="center">
+          <StockNotFoundMessage stockName={stockName} />
+        </Box>
+      )}
     </Box>
   );
 }

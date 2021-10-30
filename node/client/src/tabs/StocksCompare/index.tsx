@@ -59,7 +59,7 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
     refetch();
   }
 
-  console.log(error);
+  console.log(data);
 
   return (
     <Box>
@@ -67,25 +67,45 @@ export default function StocksCompare({ stockName }: StocksCompareProps) {
 
       {!error && (
         <>
-          <form onSubmit={handleAddStock}>
-            <TextField
-              inputRef={stockNameInputRef}
-              type="text"
-              name="stockName"
-              inputProps={{ 'data-testid': 'stock-name-input' }}
-            />
-          </form>
-          <Box display="flex" flexDirection="row">
-            {stocks.map((stock, index) => (
-              <Box p={1} key={stock}>
-                <Chip data-testid={`stock-selected-${index}`} label={stock} onDelete={() => handleDeleteStock(index)} />
-              </Box>
-            ))}
+          <Box p={2}>
+            <form onSubmit={handleAddStock}>
+              <TextField
+                fullWidth
+                inputRef={stockNameInputRef}
+                placeholder="Type the stock name and press Enter"
+                type="text"
+                name="stockName"
+                inputProps={{ 'data-testid': 'stock-name-input' }}
+              />
+            </form>
+            <Box display="flex" flexDirection="row">
+              {stocks.map((stock, index) => (
+                <Box p={1} key={stock}>
+                  <Chip
+                    data-testid={`stock-selected-${index}`}
+                    label={stock}
+                    onDelete={() => handleDeleteStock(index)}
+                  />
+                </Box>
+              ))}
+            </Box>
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Button
+                disabled={stocks.length === 0}
+                data-testid="compare-button"
+                variant="contained"
+                color="primary"
+                onClick={handleCompareClick}
+              >
+                Compare
+              </Button>
+            </Box>
           </Box>
-          <Button data-testid="compare-button" variant="contained" color="primary" onClick={handleCompareClick}>
-            Compare
-          </Button>
-          {isLoading && <CircularProgress data-testid="compare-loading-indicator" />}
+          {isLoading && (
+            <Box display="flex" justifyContent="center">
+              <CircularProgress data-testid="compare-loading-indicator" />
+            </Box>
+          )}
           {!isLoading && data && (
             <>
               {data.lastPrices.length === 1 ? (

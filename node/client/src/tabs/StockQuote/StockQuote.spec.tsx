@@ -28,7 +28,7 @@ describe('StockQuote', () => {
 
     const { elements } = createSut();
     expect(await elements.lastPrice()).toBeInTheDocument();
-    expect(await elements.lastPrice()).toHaveTextContent('Last Price: R$ 27,18');
+    expect(await elements.lastPrice()).toHaveTextContent('R$ 27,18');
 
     expect(await elements.pricedAt()).toBeInTheDocument();
     expect(await elements.pricedAt()).toHaveTextContent('Priced At: 22/10/2021');

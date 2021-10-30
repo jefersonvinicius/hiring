@@ -20,7 +20,7 @@ describe('StockGains', () => {
   });
 
   it('should should fetch the stock gains when all data is valid', async () => {
-    fetchStockGainsSpy.mockResolvedValue(sleep(100));
+    fetchStockGainsSpy.mockImplementation(() => sleep(100));
 
     const { elements, fillInputs } = createSut({
       stockName: 'Any',
